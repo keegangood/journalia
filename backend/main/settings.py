@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
 
-
+    'users',
 
 ]
 
@@ -127,7 +127,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REFRESH_TOKEN_SECRET = decouple.config('DJANGO_REFRESH_TOKEN_SECRET')
 
 # Use custom user model for authentication
-# AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = 'users.User'
 
 # define default authentication method in DRF
 REST_FRAMEWORK = {
