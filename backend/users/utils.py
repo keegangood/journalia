@@ -11,7 +11,7 @@ def generate_access_token(user):
         # id from User instance
         'user_id': user.id,
         # expiration date
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, minutes=0, seconds=5),
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, minutes=1, seconds=5),
         # initiated at date
         'iat': datetime.datetime.utcnow(),
         # additional items if desired
@@ -22,7 +22,7 @@ def generate_access_token(user):
         access_token_payload,
         settings.SECRET_KEY,
         algorithm='HS256'
-    ).decode(encoding='utf-8')
+    )
 
     return access_token
 
@@ -45,7 +45,7 @@ def generate_refresh_token(user):
         refresh_token_payload,
         settings.REFRESH_TOKEN_SECRET,
         algorithm='HS256'
-    ).decode(encoding='utf-8')
+    )
 
     # convert refresh_token bytes object into utf-8 string
     return refresh_token
