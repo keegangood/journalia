@@ -11,3 +11,6 @@ class Note(models.Model):
     is_good_idea = models.BooleanField(_('good idea'), default=False)
     date_created = models.DateTimeField(_('date created'), auto_now_add=True)
     last_modified = models.DateTimeField(_('date edited'), blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.id}. {self.title}'
