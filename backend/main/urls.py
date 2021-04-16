@@ -7,6 +7,7 @@ urlpatterns = [
 
     # include user app urls
     path('users/', include('users.urls')), # add
+    path('notes/', include('notes.urls')), # add
 
     # add login capability to browsable REST framework api, if desired
     path('api-auth/', include('rest_framework.urls')), # add (optional)
