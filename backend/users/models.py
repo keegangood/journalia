@@ -29,6 +29,7 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
 
+
         if extra_fields.get('is_staff') is not True:
             raise ValueError('Superuser must have is_staff=True.')
         if extra_fields.get('is_superuser') is not True:
@@ -38,6 +39,11 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractUser):
+    username = None
+
+    username = models.CharField(_('username'), max_length=20, unique=True, error_messages={
+                                'unique': 'This username has already been registered.'})
+
     email = models.EmailField(
         'email address',
         unique=True,
@@ -47,15 +53,16 @@ class User(AbstractUser):
     )
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['username']
 
     objects = UserManager()
 
     def __str__(self):
         return self.username
 
+
 class RefreshToken(models.Model):
-    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, null=True)
     token = models.CharField(max_length=200)
 
     def __str__(self):

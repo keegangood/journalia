@@ -29,9 +29,10 @@ def register(request):
     # serialize request JSON data
     new_user_serializer = UserCreateSerializer(data=request.data)
 
+
     if request.data.get('password') != request.data.get('password2'):
         # if password and password2 don't match return status 400
-        response.data = {'msg': ["Passwords don't match"]}
+        response.data = {'msg': ["Passwords don't maaatch"]}
         response.status_code = status.HTTP_400_BAD_REQUEST
         return response
 
