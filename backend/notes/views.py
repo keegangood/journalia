@@ -31,11 +31,11 @@ def notes_list(request):
     if request.method == 'GET':
         # get the user's notes for the given time range 
 
-        print(request.query_params.get('per_page'))
+        # print(request.query_params.get('per_page'))
         print(request.query_params.get('page'))
 
         paginator = pagination.PageNumberPagination()
-        paginator.page_size_query_param = 'per_page'
+        # paginator.page_size_query_param = 'per_page'
         paginator.page_query_param = 'page'
         notes = Note.objects.filter(owner=request.user.id).order_by('date_created')
         notes_page = paginator.paginate_queryset(notes, request)
