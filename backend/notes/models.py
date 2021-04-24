@@ -14,7 +14,11 @@ class Note(models.Model):
 
     last_modified = models.DateTimeField(_('date edited'), blank=True, null=True)
 
-    notes = models.ManyToManyField('self')
+    
+    notes = models.ManyToManyField('self', symmetrical=False, related_name="parent")
 
     def __str__(self):
         return f'{self.id}. {self.title}'
+
+
+
