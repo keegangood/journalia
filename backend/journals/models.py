@@ -27,11 +27,11 @@ class JournalItem(models.Model):
 
     last_modified = models.DateTimeField(_('date edited'), blank=True, null=True)
 
-    
-
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey()
 
     def __str__(self):
-        return f'{self.owner.username} - {[item[1] for item in self.ITEM_TYPES if item[0] == self.item_type][0]} - {self.content_object.title}'
+        return f'{self.owner.username} \
+            - {[item[1] for item in self.ITEM_TYPES if item[0] == self.item_type][0]} \
+            - {self.content_object.title}'
