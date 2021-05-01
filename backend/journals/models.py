@@ -17,7 +17,6 @@ class JournalItem(models.Model):
         (EVENT, 'Event'),
     )
 
-
     item_type = models.CharField(max_length=1, choices=ITEM_TYPES)
     owner = models.ForeignKey(get_user_model(), verbose_name=_('owner'), on_delete=models.CASCADE)
     
@@ -46,7 +45,10 @@ class JournalItem(models.Model):
     content_object = GenericForeignKey('content_type', 'object_id')
 
     def __str__(self):
-        return f'{self.owner.username} - {[item[1] for item in self.ITEM_TYPES if item[0]==self.item_type][0]}: {self.content_object.title}'
+        item_type = [item[1] for item in self.ITEM_TYPES if item[0]==self.item_type][0]
+        return f'{self.owner.username} - {item_type}: {self.content_object.title}'
 
     class Meta:
         ordering = ['date_created']
+
+
