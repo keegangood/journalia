@@ -35,8 +35,8 @@ INSTALLED_APPS = [
     'users',
     'journals',
     'notes',
-    'tasks'
-
+    'tasks',
+    'events',
 ]
 
 MIDDLEWARE = [
@@ -173,3 +173,26 @@ CORS_ALLOW_HEADERS = [
     'x-csrftoken',
     'withcredentials'
 ]
+
+
+# LOGGING = {
+#     'version': 1,
+#     'filters': {
+#         'require_debug_true': {
+#             '()': 'django.utils.log.RequireDebugTrue',
+#         }
+#     },
+#     'handlers': {
+#         'console': {
+#             'level': 'DEBUG',
+#             'filters': ['require_debug_true'],
+#             'class': 'logging.StreamHandler',
+#         }
+#     },
+#     'loggers': {
+#         'django.db.backends': {
+#             'level': 'DEBUG',
+#             'handlers': ['console'],
+#         }
+#     }
+# }

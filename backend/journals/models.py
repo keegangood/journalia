@@ -18,7 +18,7 @@ class JournalItem(models.Model):
     )
 
     item_type = models.CharField(max_length=1, choices=ITEM_TYPES)
-    owner = models.ForeignKey(get_user_model(), verbose_name=_('owner'), on_delete=models.CASCADE)
+    owner = models.ForeignKey(get_user_model(), verbose_name=_('owner'), on_delete=models.CASCADE, related_name="journal_items")
     
     is_important = models.BooleanField(_('important'), default=False)
     is_research = models.BooleanField(_('research'), default=False)
