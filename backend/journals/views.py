@@ -1,3 +1,5 @@
+from journals.serializers import JournalItemChildrenField
+from journals.serializers import JournalItemDetailSerializer
 from django.db.models import query
 from django.shortcuts import render
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -16,7 +18,6 @@ from .models import JournalItem
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.db.models import Prefetch
-from django.db.models.query import prefetch_related_objects
 
 @api_view(['GET'])
 @authentication_classes([SafeJWTAuthentication])
@@ -131,50 +132,28 @@ def journal_item_list(request):
             owner=request.user, parent_id=None).prefetch_related('children__content_object'), to_attr='top_level_journal_items'))
     
     journal_items = []
-    for item in user.first().top_level_journal_items:
-        item_dict = {}
+    # for item in user.first().top_level_journal_items:
+    #     item_dict = {}
         
-        children = item.children.all()
-        for child in children:
-            print(child.content_object)
-
-            
-    
-
-
-    # print(user.first().journal_items.first().children.all())
-
-    # print(journal_item_objects)
-
-    # journal_item_objects.prefetch_related()
-
-    # journal_item_dict = dict([(item.id, item) for item in journal_item_objects])
-
-
-    # print(dir(journal_item_objects[0]))
-
-    # journal_item_objects = journal_item_objects.prefetch_related('content_object')
+    #     children = item.children.all()
+    #     for child in children:
+    #         print(child.content_object)
 
     
 
-    # print(journal_item_dict)
+    journal_items = user.first().top_level_journal_items
+    journal_item_serializer = JournalItemDetailSerializer(journal_items, many=True)
 
 
+    # for journal_item in journal_items:
+    #     journal_item_serializer.data.append(journal_item)
 
+    #     journal_item.children.all()
+
+    # print(journal_item_serializer.data)
+
+    
     print(len(connection.queries))
-
-
-    # children = JournalItem.objects.filter(parent_id=j_task_1.id)
-
-    # print('items:', items)
-
-    # print('children:', children)
-
-    # for child in children:
-        # print(child.content_object)
-    # user_serializer = UserDetailSerializer(instance=user.first())
-
-    # return Response(
-    #     data = {"items": user.first().top_level_journal_items}
-    # )
+    return Response(data={
+        "journal_items":journal_item_serializer.data})
 
