@@ -29,24 +29,27 @@ class JournalItemDetailSerializer(ModelSerializer):
         content_object = instance.content_object
         context={'children':[JournalItemDetailSerializer(child).data for child in instance.children.all()]}
 
+        serializer = None
+
         if isinstance(content_object, Task):
             serializer = TaskDetailSerializer(instance = content_object, context=context)
             serializer.item_type = 'T'
             
         elif isinstance(content_object, Note):
-            serializer = NoteDetailSerializer(content_object, context=context)
+            serializer = NoteDetailSerializer(instance=content_object, context=context)
             serializer.item_type = 'N'
 
         elif isinstance(content_object, Event):
-            serializer = EventDetailSerializer(content_object, context=context)
+            serializer = EventDetailSerializer(instance=content_object, context=context)
             serializer.item_type = 'N'
 
-        # make a copy of the immutable serializer data and 
-        # add the children from the context dictonary
-        serializer_data = serializer.data.copy()
-        serializer_data |= serializer.context
+        if serializer is not None:
+            # make a copy of the immutable serializer data and 
+            # add the children from the context dictonary
+            serializer_data = serializer.data.copy()
+            serializer_data |= serializer.context
 
-        return serializer_data
+            return serializer_data
 
         
     class Meta:
