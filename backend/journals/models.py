@@ -44,9 +44,28 @@ class JournalItem(models.Model):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
 
+    def add_child(self, child_object, save=False):
+        self.children.add(child_object)
+        
+        if save:
+            super(JournalItem, self).save()
+
+
+    def set_parent(self, parent_object, save=False):
+
+        self.parent_type = parent_object.content_type
+        self.parent_id = parent_object.id
+        self.parent_object = parent_object
+
+        if save:       
+            super(JournalItem, self).save()
+
+
     def __str__(self):
-        item_type = [item[1] for item in self.ITEM_TYPES if item[0]==self.item_type][0]
-        return f'{self.owner.username} - {item_type}: {self.content_object.title}'
+        item_type = [item[1] for item in self.ITEM_TYPES if item[0]==self.item_type][0]        
+        title = self.content_object.title if self.content_object else "ERROR NO CONTENT OBJECT"
+        return f'{self.owner.username} - {item_type} #{self.content_object.id}: {title}'
+
 
     class Meta:
         ordering = ['date_created']
