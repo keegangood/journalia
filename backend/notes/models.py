@@ -10,5 +10,5 @@ class Note(models.Model):
     children = GenericRelation('journals.JournalItem', content_type_field='child_type', object_id_field='child_id')
 
     def __str__(self):
-        return f'{self.id}. {self.title}'
+        return f'Note #{self.id}. {self.title}'
 
