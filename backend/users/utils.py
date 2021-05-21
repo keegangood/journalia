@@ -11,7 +11,7 @@ def generate_access_token(user):
         # id from User instance
         'user_id': user.id,
         # expiration date
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, minutes=100, seconds=5),
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1, minutes=0, seconds=5),
         # initiated at date
         'iat': datetime.datetime.utcnow(),
         # additional items if desired
