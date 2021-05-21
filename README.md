@@ -4,5 +4,8 @@
 
 Concepts Learned:
 - GenericForeignKey / GenericRelation
+- nested serialization of GFK/GR
+- self-referencing GFK
 - Logging raw SQL queries
-- prefetch_related_objects()
+- prefetch_related() / Prefetch()
+- pre_delete signal
