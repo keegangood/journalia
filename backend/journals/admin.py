@@ -11,15 +11,20 @@ def get_link(instance): return reverse(
 class JournalItemAdmin(admin.ModelAdmin):
     model = JournalItem
 
-    list_display = ('owner', 'content_object',
-                    'date_created', 'parent_object', )
+    list_display = ('owner', 'date_created', 'parent_object', )
+
+    exclude = ('parent_type', 'parent_id', 'child_type', 'child_id', 'content_type', 'object_id')
 
     search_fields = ('owner__username', 'date_created', )
 
-    readonly_fields = ('children', 'parent_object')
+    readonly_fields = ( 'content_object', 'children', 'parent_object',)
+
+    def content_object(self, instance):
+        '''Display a link to the content object for a particular JournalItem instance'''
+        return format_html('<a href="{}"> {} </a><br>', get_link(instance.content_object), instance.content_object)
 
     def parent_object(self, instance):
-        '''populate the parent_object field for a particular JournalItem'''
+        '''populate the parent_object field for a particular JournalItem instance'''
         parent_object = instance.parent_object
         if parent_object:
             html = format_html('<a href="{}"> {} </a><br>', get_link(parent_object), parent_object)
@@ -31,10 +36,8 @@ class JournalItemAdmin(admin.ModelAdmin):
     def children(self, instance):
         '''populate the 'children' field for a particular JournalItem'''
 
-        return format_html_join('',
-                                mark_safe('<a href="{}"> {} </a><br>'),
-                                ((get_link(child), child)
-                                 for child in instance.children.all()),
+        return format_html_join('', mark_safe('<a href="{}"> {} </a><br>'),
+                                ((get_link(child), child)for child in instance.children.all()),
                                 ) or None
 
 
