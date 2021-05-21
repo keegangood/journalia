@@ -14,13 +14,19 @@ class JournalItemAdmin(admin.ModelAdmin):
     list_display = ('owner', 'content_object',
                     'date_created', 'parent_object', )
 
-    search_fields = ('owner__username', )
+    search_fields = ('owner__username', 'date_created', )
 
     readonly_fields = ('children', 'parent_object')
 
     def parent_object(self, instance):
         '''populate the parent_object field for a particular JournalItem'''
-        return format_html('<a href="{}"> {} </a><br>', get_link(instance), instance)
+        parent_object = instance.parent_object
+        if parent_object:
+            html = format_html('<a href="{}"> {} </a><br>', get_link(parent_object), parent_object)
+        else:
+            html = None
+
+        return html
 
     def children(self, instance):
         '''populate the 'children' field for a particular JournalItem'''
