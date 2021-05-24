@@ -14,6 +14,9 @@ def delete_content_object(sender, instance, **kwargs):
     - delete its content_object
     '''
     
-    [child.delete() for child in instance.children.all()]
+    print(instance.content_object)
 
-    instance.content_object.delete()
+    [child.delete() for child in instance.children.all()]
+    
+    if instance.content_object:
+        instance.content_object.delete()
