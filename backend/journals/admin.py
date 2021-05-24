@@ -11,7 +11,7 @@ def get_link(instance): return reverse(
 class JournalItemAdmin(admin.ModelAdmin):
     model = JournalItem
 
-    list_display = ('owner', 'date_created', 'parent_object', )
+    list_display = ('owner', 'date_created',  'content_object', 'parent_object',)
 
     exclude = ('parent_type', 'parent_id', 'child_type', 'child_id', 'content_type', 'object_id')
 
