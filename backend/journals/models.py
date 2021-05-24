@@ -23,7 +23,7 @@ class JournalItem(models.Model):
     is_important = models.BooleanField(_('important'), default=False)
     is_research = models.BooleanField(_('research'), default=False)
     is_good_idea = models.BooleanField(_('good idea'), default=False)
-    date_created = models.DateTimeField(_('date created'), blank=True, null=True)
+    date_created = models.DateTimeField(_('date created'), auto_now_add=True)
 
     last_modified = models.DateTimeField(_('date edited'), blank=True, null=True)
 
@@ -64,7 +64,7 @@ class JournalItem(models.Model):
     def __str__(self):
         item_type = [item[1] for item in self.ITEM_TYPES if item[0]==self.item_type][0]        
         title = self.content_object.title if self.content_object else "ERROR NO CONTENT OBJECT"
-        return f'{self.owner.username} - {item_type} #{self.content_object.id}: {title}'
+        return f'{self.owner.username} - {item_type} {self.content_object.id}: {title}'
 
 
     class Meta:
