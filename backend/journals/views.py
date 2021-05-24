@@ -1,9 +1,9 @@
-from journals.serializers import JournalItemChildrenField
-from journals.serializers import JournalItemDetailSerializer
 from django.db.models import query
 from django.shortcuts import render
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.db import connection, reset_queries
+
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -11,149 +11,334 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from users.models import User
 from users.serializers import UserDetailSerializer
 from users.authentication import SafeJWTAuthentication
+
 from events.models import Event
+from events.serializers import EventCreateSerializer
+from events.serializers import EventDetailSerializer
+
 from tasks.models import Task
+from tasks.serializers import TaskCreateSerializer
+from tasks.serializers import TaskDetailSerializer
+
 from notes.models import Note
+from notes.serializers import NoteCreateSerializer
+from notes.serializers import NoteDetailSerializer
+
+from journals.serializers import JournalItemChildrenField
+from journals.serializers import JournalItemDetailSerializer
+
 from .models import JournalItem
+
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.db.models import Prefetch
 
-@api_view(['GET'])
+def model_from_item_type(item_type):
+    if item_type == 'T':
+        model = Task
+    elif item_type == 'N':
+        model = Note
+    elif item_type == 'E':
+        model = Event
+
+    return model
+
+def serializer_from_item_type(item_type, serializer_type):
+
+    serializers = {
+        'T': {
+            'create': TaskCreateSerializer,
+            'detail': TaskDetailSerializer
+        },
+        'N': {
+            'create': NoteCreateSerializer,
+            'detail': NoteDetailSerializer
+        },
+        'E': {
+            'create': EventCreateSerializer,
+            'detail': EventDetailSerializer
+        }
+    }
+
+    return serializers[item_type][serializer_type]
+
+
+def get_parent_object(item_type, item_id, owner):
+    parent_model = model_from_item_type(item_type)
+    parent_ct = ContentType.objects.get_for_model(parent_model)
+    parent_object = JournalItem.objects.filter(content_type=parent_ct, object_id=item_id, owner=owner).first()
+
+    return parent_object
+
+
+def parent_adopts_child(parent, child):
+    parent.add_child(child)
+    parent.save()
+
+    child.set_parent(parent)
+    child.save()
+
+    return
+
+
+
+
+
+
+@api_view(['GET', 'POST'])
 @authentication_classes([SafeJWTAuthentication])
 @permission_classes([IsAuthenticated])
 @ensure_csrf_cookie
 def journal_item_list(request):
+    # GET A USER OBJECT WITH ALL OF ITS RELATED JOURNAL ITEMS
+    # ------------------------------------------------------------ #
+    # ------------------------------------------------------------ #
+    response = Response()
+    if request.method == 'GET':
+        reset_queries()
 
-    # delete all JournalItems, Notes and Tasks for testing
-    JournalItem.objects.all().delete()
-    Note.objects.all().delete()
-    Task.objects.all().delete()
-    
-    # print(request.user)
-
-    # get a user object
-    user = User.objects.get(id=request.user.id)
-    
-# ----------------------------------------------------------------------- #
-
-
-    # create notes, and tasks
-    task_1 = Task.objects.create(title="Walk the dog")
-    note_1 = Note.objects.create(title="Avoid Main St.")
-    event_1 = Event.objects.create(title="Saw a raccoon!")
-    
-
-    # print("event_1:", event_1)
-    # print("task_1:", task_1)
-    # print("note_1:", note_1)
-    # print("event_1:", event_1)
- 
-
-    # create JournalItem objects to store the new task and note objects
-    j_task_1 = JournalItem.objects.create(content_object=task_1, item_type='T', owner=user) # children: note_1 and task_3
-    j_note_1 = JournalItem.objects.create(content_object=note_1, item_type='N', owner=user)
-    j_event_1 = JournalItem.objects.create(content_object=event_1, item_type='E', owner=user)
-    
-    j_note_1.parent_object = j_task_1
-    j_event_1.parent_object = j_task_1
-
-    # make both notes the children of the task
-    j_task_1.children.add(j_note_1)
-    j_task_1.children.add(j_event_1)
-    
-    j_note_1.parent_object = j_task_1
-    j_note_1.parent_id = j_task_1.id
-    j_event_1.parent_object = j_task_1
-    j_note_1.parent_id = j_task_1.id
-    
-    j_event_1.save()
-    j_note_1.save()
-    j_task_1.save()
-
-    # print("j_note_1.parent_object:", j_note_1.parent_object)
-    # print("j_note_1.parent_object:", j_note_1.parent_object)
-
-# --------------------------------------------------------------------------- #
-
-    event_2 = Event.objects.create(title="Mom arrives")
-    task_2  = Task.objects.create( title="Organize house")
-    note_2  = Note.objects.create( title="Get rid of stuff!!!")
-    note_2  = Note.objects.create( title="Buy flowers")
-    
-    # print("event_2:", event_2)
-    # print("task_2:", task_2)
-    # print("note_2:", note_2)
-    
-    j_event_2 = JournalItem.objects.create(content_object=event_2, item_type='E', owner=user)
-    j_task_2 = JournalItem.objects.create(content_object=task_2, item_type='T', owner=user)
-    j_note_2 = JournalItem.objects.create(content_object=note_2, item_type='N', owner=user)
-    
-    # make both notes the children of the task
-    j_event_2.children.add(j_task_2)
-    j_event_2.children.add(j_note_2)
-
-    j_task_2.parent_object = j_event_2
-    j_task_2.parent_id = j_event_2.id
-    j_note_2.parent_object = j_event_2
-    j_note_2.parent_id = j_event_2.id
-    j_task_2.save()
-    j_note_2.save()
-
-    # print('j_task_1_children:', j_task_1.children.all())
-    # print('j_event_2_children:', j_event_2.children.all())
-    
-    # print('j_note_1_parent:', child_1.parent_object)
-
-# ------------------------------------------------------------------------------------------ #
-    
-
-    # find the content type for each model
-    note_ct = ContentType.objects.get_for_model(Note)
-    task_ct = ContentType.objects.get_for_model(Task)
-    event_ct = ContentType.objects.get_for_model(Event)
-
-
-
-
-
-    reset_queries()
-    # items = JournalItem.objects.filter(owner=user, parent_id=None).filter(Q(content_type=task_ct) | Q(content_type=event_ct)).prefetch_related('children')
-
-    # j = JournalItem.objects.prefetch_related('children').filter(owner=user, parent_id=None)
-
-
-    # journal_item_objects = JournalItem.objects.filter(owner=user, parent_id=None).prefetch_related('content_object')
-
-    # get all top-level journal items and their children for a particular user
-    # WHYYYYYY!?!?!?
-    user = User.objects.filter(id=request.user.id).prefetch_related(
-        Prefetch('journal_items', queryset=JournalItem.objects.filter(
-            owner=request.user, parent_id=None).prefetch_related('children__content_object'), to_attr='top_level_journal_items'))
-    
-    journal_items = []
-    # for item in user.first().top_level_journal_items:
-    #     item_dict = {}
+        # get all top-level journal items and their children for a particular user
+        # WHYYYYYY!?!?!?
+        user = User.objects.filter(id=request.user.id).prefetch_related(
+            Prefetch('journal_items', queryset=JournalItem.objects.filter(
+                owner=request.user, parent_id=None).prefetch_related(
+                    'children__content_object'), to_attr='top_level_journal_items')).first()
         
-    #     children = item.children.all()
-    #     for child in children:
-    #         print(child.content_object)
+        journal_items = user.top_level_journal_items
+        journal_item_serializer = JournalItemDetailSerializer(journal_items, many=True)
 
+        
+        print(len(connection.queries))
+
+        response.data = {"journalItems": journal_item_serializer.data}
+
+
+
+    # CREATE JOURNAL ITEMS
+    # ----------------------------------------------------------------------- #
+    # ----------------------------------------------------------------------- #
+    elif request.method == 'POST':
+        user = User.objects.get(id=request.user.id)
+
+        # get the serializer for the new item based on its model
+        new_item_type = request.data.get('item_type')
+        new_item_serializer = serializer_from_item_type(new_item_type, 'create')        
+        
+        # initialize the serializer with the data
+        new_item_serializer = new_item_serializer(data=request.data)
+
+        if new_item_serializer.is_valid():
+
+            # save new item
+            new_item = new_item_serializer.save()
+            
+            # create journal item for new item
+            journal_item = JournalItem.objects.create(content_object=new_item, item_type=new_item_type, owner=user)
+
+            # get parent info from request
+            parent_data = request.data.get('parent')
+            
+
+            # check if new item will have a parent
+            if parent_data:
+                parent_type = parent_data.get('item_type')
+                parent_id = parent_data.get('object_id')
+                # get model, ContentType and parent JournalItem objects
+                
+                parent_object = get_parent_object(parent_type, parent_id, user)
+
+                # if the parent exists
+                if parent_object:
+                    parent_adopts_child(parent=parent_object, child=journal_item)
+   
+                # if the parent item doesn't exist
+                else:                
+                    # delete new item that was just created
+                    new_item.delete()
+
+                    response.status_code = status.HTTP_400_BAD_REQUEST
+                    response.data = {
+                        "error": "specified parent object doesn't exist"
+                    }
+
+                    return response
+               
+            journal_item = JournalItemDetailSerializer(journal_item)
+
+            response.data = {
+                "newItem": journal_item.data,
+                "message": "Created successfully!"
+            }
+        else:
+
+            response.status_code = status.HTTP_400_BAD_REQUEST
+            response.data = {
+                'errors': new_item_serializer.errors
+            }    
+
+
+    return response
+        
+
+
+
+
+
+
+
+
+@api_view(['GET', 'POST'])
+@authentication_classes([SafeJWTAuthentication])
+@permission_classes([IsAuthenticated])
+@ensure_csrf_cookie
+def journal_item_detail(request):
+    response = Response()
+    user = User.objects.get(id=request.user.id)
+
+    # GET SINGLE JOURNAL ITEM
+    # ----------------------------------------------------------- #
+    # ----------------------------------------------------------- #
+    if request.method == "GET":
+        item_type = request.data.get('item_type')
+        item_id = request.data.get('item_id')
+
+        # if a particular item is specified, get the item
+        if item_type and item_id:
+
+            item_model = model_from_item_type(item_type)
+            item_ct = ContentType.objects.get_for_model(item_model)
+            journal_item = JournalItem.objects.prefetch_related(
+                'content_object').filter(
+                    content_type=item_ct, object_id=item_id, owner=request.user).first()
+
+            if journal_item is None:
+                response.status_code=status.HTTP_400_BAD_REQUEST
+                response.data = {"errors": [f"item not found"]}
+            else:
+                detail_serializer = JournalItemDetailSerializer(journal_item) 
+
+                response.data = {
+                    "journalItem": detail_serializer.data,
+                }
+
+        else:
+
+            response.status_code=status.HTTP_400_BAD_REQUEST
+            response.data = {"errors": ["missing item_type or item_id in request data for JournalItem"]}
+
+    # CREATE JOURNAL ITEM
+    # ----------------------------------------------------------- #
+    # ----------------------------------------------------------- #
+    elif request.method == "POST":
+        item_type = request.data.get('item_type')
+        item_id = request.data.get('item_id')
+
+        if item_type and item_id:
+
+            item_model = model_from_item_type(item_type)
+            item_ct = ContentType.objects.get_for_model(item_model)
+            journal_item = JournalItem.objects.prefetch_related('content_object').filter(content_type=item_ct, object_id=item_id, owner=request.user).first()
+
+            if journal_item is None:
+                response.status_code=status.HTTP_400_BAD_REQUEST
+                response.data = {"errors": [f"item not found"]}
+            else:
+
+                create_serializer = serializer_from_item_type(item_type, 'create')
+
+                create_serializer = create_serializer(journal_item.content_object, data=request.data.get('updated_fields'), partial=True) 
+
+                if create_serializer.is_valid():    
+
+                    # get parent info from request
+                    parent_data = request.data.get('parent')
+            
+
+                    # check if new item will have a parent
+                    if parent_data:
+                        parent_type = parent_data.get('item_type')
+                        parent_id = parent_data.get('object_id')
+                        
+                        parent_object = get_parent_object(parent_type, parent_id, user)
+
+                        # if the parent exists
+                        if parent_object:
+                            parent_adopts_child(parent=parent_object, child=journal_item)
+
+                        # if the parent item doesn't exist
+                        else:                
+                            # delete new item that was just created
+
+                            response.status_code = status.HTTP_400_BAD_REQUEST
+                            response.data = {
+                                "error": "specified parent object doesn't exist"
+                            }
+
+                            return response
+
+
+                    create_serializer.save()
+
+                    response.data = {
+                        "updatedObject": JournalItemDetailSerializer(journal_item).data,
+                        "message": "Updated successfully!"
+                    }
+
+
+                else:
+                    response.data = create_serializer.errors
+
+        else:
+            response.status_code=status.HTTP_400_BAD_REQUEST
+            response.data = {"errors": ["missing item_type or item_id in request data for JournalItem"]}
+
+
+
+    return response
+
+
+
+
+
+
+
+@api_view(['POST'])
+@authentication_classes([SafeJWTAuthentication])
+@permission_classes([IsAuthenticated])
+@ensure_csrf_cookie
+def journal_item_delete(request):
+    '''Delete a JournalItem'''
+
+    response = Response()
+
+    if request.data.get('item_id'):
+        item_id = request.data.get('item_id')
+        item_type = request.data.get('item_type')
+        
+        item_model = model_from_item_type(item_type)
+
+        item_type = ContentType.objects.get_for_model(item_model)
+
+        # delete the particular item
+        journal_item = JournalItem.objects.filter(content_type=item_type, object_id=item_id, owner=request.user).first()
+
+    else:
+        journal_item = JournalItem.objects.first()
     
 
-    journal_items = user.first().top_level_journal_items
-    journal_item_serializer = JournalItemDetailSerializer(journal_items, many=True)
+        if journal_item is None:
+            response.status_code = status.HTTP_400_BAD_REQUEST
+            response.data={'errors': ["No JournalItem objects exist."]}
 
+        else:
+            # this will trigger the pre_delete signal to delete the related
+            # content object and all children of the deleted item
+            journal_item.delete()
 
-    # for journal_item in journal_items:
-    #     journal_item_serializer.data.append(journal_item)
-
-    #     journal_item.children.all()
-
-    # print(journal_item_serializer.data)
-
+            response.data={
+                'message': 'deleted successfully'
+            }
     
-    print(len(connection.queries))
-    return Response(data={
-        "journal_items":journal_item_serializer.data})
+    return response
+    
 
