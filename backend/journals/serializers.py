@@ -33,15 +33,12 @@ class JournalItemDetailSerializer(ModelSerializer):
 
         if isinstance(content_object, Task):
             serializer = TaskDetailSerializer(instance = content_object, context=context)
-            serializer.item_type = 'T'
             
         elif isinstance(content_object, Note):
             serializer = NoteDetailSerializer(instance=content_object, context=context)
-            serializer.item_type = 'N'
 
         elif isinstance(content_object, Event):
             serializer = EventDetailSerializer(instance=content_object, context=context)
-            serializer.item_type = 'N'
 
         if serializer is not None:
             # make a copy of the immutable serializer data and 
