@@ -1,6 +1,7 @@
 from rest_framework.serializers import RelatedField, ModelSerializer, SerializerMethodField
 
 from .models import JournalItem
+
 from notes.models import Note
 from notes.serializers import NoteDetailSerializer
 
@@ -9,6 +10,8 @@ from tasks.serializers import TaskDetailSerializer
 
 from events.models import Event
 from events.serializers import EventDetailSerializer
+
+
 
 class JournalItemChildrenField(RelatedField):
     def to_representation(self, instance):
@@ -19,35 +22,57 @@ class JournalItemChildrenField(RelatedField):
         model = JournalItem
     
 
-
 class JournalItemDetailSerializer(ModelSerializer):
-
+    class Meta:
+        exclude = ['item_type',]
+        
     children = JournalItemChildrenField(many=True, read_only=True)
 
     def to_representation(self, instance):
+        fields = [
+            'id',
+            'is_important',
+            'is_research',
+            'is_good_idea',
+            'data_created',
+            'last_modified',
+            'object_id'
+        ]
 
+        # initialize the serializer with the current self instance
+        data = super(JournalItemDetailSerializer, self).to_representation(instance)
+
+        # filter out unnecessary items
+        data = {key:value for key,value in data.items() if key in fields}
+
+        # serialize all the children of the current item
+        children ={
+            'children':[JournalItemDetailSerializer(child).data for child in instance.children.all()],
+        }
+
+        # serialize the content_object
         content_object = instance.content_object
-        context={'children':[JournalItemDetailSerializer(child).data for child in instance.children.all()]}
-
-        serializer = None
-
         if isinstance(content_object, Task):
-            serializer = TaskDetailSerializer(instance = content_object, context=context)
+            content_object = TaskDetailSerializer(instance = content_object)
             
         elif isinstance(content_object, Note):
-            serializer = NoteDetailSerializer(instance=content_object, context=context)
+            content_object = NoteDetailSerializer(instance=content_object)
 
         elif isinstance(content_object, Event):
-            serializer = EventDetailSerializer(instance=content_object, context=context)
+            content_object = EventDetailSerializer(instance=content_object)
 
-        if serializer is not None:
+        # add the children and the content_object items to the JournalItem serializer
+        if content_object is not None:
             # make a copy of the immutable serializer data and 
             # add the children from the context dictonary
-            serializer_data = serializer.data.copy()
-            serializer_data |= serializer.context
+            data.update(content_object.data.copy())
 
-            return serializer_data
+            # only one level of nesting allowed at the moment
+            # if the instance is a child, it can't have children
+            if not instance.is_child:
+                data.update(children)
 
+        return data
         
     class Meta:
         model = JournalItem

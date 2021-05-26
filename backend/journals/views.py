@@ -72,11 +72,8 @@ def get_parent_object(item_type, item_id, owner):
 
 
 def parent_adopts_child(parent, child):
-    parent.add_child(child)
-    parent.save()
-
-    child.set_parent(parent)
-    child.save()
+    parent.add_child(child, save=True)
+    child.set_parent(parent, save=True)
 
     return
 
@@ -211,9 +208,11 @@ def journal_item_detail(request):
                 'content_object').filter(
                     content_type=item_ct, object_id=item_id, owner=request.user).first()
 
+
             if journal_item is None:
                 response.status_code=status.HTTP_400_BAD_REQUEST
                 response.data = {"errors": [f"item not found"]}
+
             else:
                 detail_serializer = JournalItemDetailSerializer(journal_item) 
 
@@ -256,6 +255,11 @@ def journal_item_detail(request):
 
                     # check if new item will have a parent
                     if parent_data:
+                        if journal_item.is_child:
+                            response.status_code = status.HTTP_400_BAD_REQUEST
+                            response.data = {"errors":["item cannot have children"]}
+                            return response
+                        
                         parent_type = parent_data.get('item_type')
                         parent_id = parent_data.get('object_id')
                         
@@ -271,7 +275,7 @@ def journal_item_detail(request):
 
                             response.status_code = status.HTTP_400_BAD_REQUEST
                             response.data = {
-                                "error": "specified parent object doesn't exist"
+                                "errors": ["specified parent object doesn't exist"]
                             }
 
                             return response

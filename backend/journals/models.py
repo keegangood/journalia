@@ -59,7 +59,14 @@ class JournalItem(models.Model):
 
         if save:       
             super(JournalItem, self).save()
+    
+    @property
+    def is_child(self):
+        return self.parent_id is not None
 
+    @property
+    def is_parent(self):
+        return len(self.children.all()) > 0
 
     def __str__(self):
         item_type = [item[1] for item in self.ITEM_TYPES if item[0]==self.item_type][0]        
