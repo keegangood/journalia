@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
+
 from users.models import User
 from users.serializers import UserDetailSerializer
 from users.authentication import SafeJWTAuthentication
@@ -24,13 +25,10 @@ from notes.models import Note
 from notes.serializers import NoteCreateSerializer
 from notes.serializers import NoteDetailSerializer
 
-from journals.serializers import JournalItemChildrenField
-from journals.serializers import JournalItemDetailSerializer
-
+from .serializers import JournalItemDetailSerializer
 from .models import JournalItem
 
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Q
 from django.db.models import Prefetch
 
 def model_from_item_type(item_type):
@@ -88,12 +86,13 @@ def parent_adopts_child(parent, child):
 @ensure_csrf_cookie
 def journal_item_list(request):
     # GET A USER OBJECT WITH ALL OF ITS RELATED JOURNAL ITEMS
-    # ------------------------------------------------------------ #
-    # ------------------------------------------------------------ #
+    # ------------------------------------------------------------------------------------------------------------------------------ #
+    # ------------------------------------------------------------------------------------------------------------------------------ #
     response = Response()
     if request.method == 'GET':
         reset_queries()
 
+        # This will also need to include a date range (24-hours, 1-week, 1-month, 1-year)
         # get all top-level journal items and their children for a particular user
         # WHYYYYYY!?!?!?
         user = User.objects.filter(id=request.user.id).prefetch_related(
@@ -111,9 +110,9 @@ def journal_item_list(request):
 
 
 
-    # CREATE JOURNAL ITEMS
-    # ----------------------------------------------------------------------- #
-    # ----------------------------------------------------------------------- #
+    # CREATE JOURNAL ITEM
+    # ------------------------------------------------------------------------------------------------------------------------------ #
+    # ------------------------------------------------------------------------------------------------------------------------------ #
     elif request.method == 'POST':
         user = User.objects.get(id=request.user.id)
 
@@ -135,7 +134,6 @@ def journal_item_list(request):
             # get parent info from request
             parent_data = request.data.get('parent')
             
-
             # check if new item will have a parent
             if parent_data:
                 parent_type = parent_data.get('item_type')
@@ -146,7 +144,16 @@ def journal_item_list(request):
 
                 # if the parent exists
                 if parent_object:
-                    parent_adopts_child(parent=parent_object, child=journal_item)
+                    
+                    # to maintain a single level of relationship if the parent object 
+                    # is a child of another object, it can't have children
+                    if parent_object.is_child:
+                        response.status_code = status.HTTP_400_BAD_REQUEST
+                        response.data = {"errors":["item cannot have children"]}
+                        return response
+                        
+                    else:
+                        parent_adopts_child(parent=parent_object, child=journal_item)
    
                 # if the parent item doesn't exist
                 else:                
@@ -164,7 +171,7 @@ def journal_item_list(request):
 
             response.data = {
                 "newItem": journal_item.data,
-                "message": "Created successfully!"
+                "messages": ["Created successfully!"]
             }
         else:
 
@@ -193,8 +200,8 @@ def journal_item_detail(request):
     user = User.objects.get(id=request.user.id)
 
     # GET SINGLE JOURNAL ITEM
-    # ----------------------------------------------------------- #
-    # ----------------------------------------------------------- #
+    # ----------------------------------------------------------------------------------------------------------------------------- #
+    # ----------------------------------------------------------------------------------------------------------------------------- #
     if request.method == "GET":
         item_type = request.data.get('item_type')
         item_id = request.data.get('item_id')
@@ -225,9 +232,9 @@ def journal_item_detail(request):
             response.status_code=status.HTTP_400_BAD_REQUEST
             response.data = {"errors": ["missing item_type or item_id in request data for JournalItem"]}
 
-    # CREATE JOURNAL ITEM
-    # ----------------------------------------------------------- #
-    # ----------------------------------------------------------- #
+    # UPDATE JOURNAL ITEM
+    # ----------------------------------------------------------------------------------------------------------------------------- #
+    # ----------------------------------------------------------------------------------------------------------------------------- #
     elif request.method == "POST":
         item_type = request.data.get('item_type')
         item_id = request.data.get('item_id')
@@ -255,10 +262,7 @@ def journal_item_detail(request):
 
                     # check if new item will have a parent
                     if parent_data:
-                        if journal_item.is_child:
-                            response.status_code = status.HTTP_400_BAD_REQUEST
-                            response.data = {"errors":["item cannot have children"]}
-                            return response
+                        
                         
                         parent_type = parent_data.get('item_type')
                         parent_id = parent_data.get('object_id')
@@ -267,6 +271,12 @@ def journal_item_detail(request):
 
                         # if the parent exists
                         if parent_object:
+
+                            if journal_item.is_child:
+                                response.status_code = status.HTTP_400_BAD_REQUEST
+                                response.data = {"errors":["item cannot have children"]}
+                                return response
+
                             parent_adopts_child(parent=parent_object, child=journal_item)
 
                         # if the parent item doesn't exist
@@ -285,7 +295,7 @@ def journal_item_detail(request):
 
                     response.data = {
                         "updatedObject": JournalItemDetailSerializer(journal_item).data,
-                        "message": "Updated successfully!"
+                        "messages": ["Updated successfully!"]
                     }
 
 
@@ -340,7 +350,7 @@ def journal_item_delete(request):
             journal_item.delete()
 
             response.data={
-                'message': 'deleted successfully'
+                'messages': ['deleted successfully']
             }
     
     return response
