@@ -1,0 +1,32 @@
+@use '../scss/journalia-variables.scss' as *;
+@use '../scss/bootstrap-config.scss';
+@use '../scss/journalia-mixins.scss' as *;
+
+// 
+* {
+  font-family: $secondary-font;
+  font-weight: 800;
+}
+
+body {
+  background-image: $body-bg-landscape;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+
+#main-container {
+  display: flex;
+
+  flex-direction: column;
+
+  position:relative;
+}
+  
+
+@media only screen and (max-width: 768px){
+  #background-img {
+    background-image: $body-bg-portrait;
+  }
+}
