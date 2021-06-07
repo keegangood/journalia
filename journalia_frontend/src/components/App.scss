@@ -23,7 +23,15 @@ body {
 
   position:relative;
 }
-  
+
+.page-container {
+  background-color: adjust-color($cultured, $alpha: -.2);
+
+  @include flex($justify-content: center);
+
+  position: relative;
+  height: 100vh;
+}
 
 @media only screen and (max-width: 768px){
   #background-img {

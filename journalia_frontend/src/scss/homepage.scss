@@ -2,13 +2,6 @@
 @use './journalia-mixins.scss' as *;
 
 #homepage {
-    background-color: adjust-color($cultured, $alpha: -.2);
-
-    @include flex($justify-content: center);
-
-    position: relative;
-    height: 100vh;
-
     .boxes {
       @include flex($justify-content: center);
       width: 100%;

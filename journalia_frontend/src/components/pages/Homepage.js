@@ -3,7 +3,7 @@ import '../../scss/homepage.scss';
 
 const Homepage = () => {
   return (
-    <div className="container-fluid w-90" id="homepage">
+    <div className="container-fluid w-90 page-container" id="homepage">
       <div className="boxes">
         <div className="box" id='box1'></div>
         <div className="box" id='box2'></div>
