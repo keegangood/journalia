@@ -1,5 +1,5 @@
 import {combineReducers} from '@reduxjs/toolkit';
-import UsersSlice from './crushCloneSlice';
+import AuthSlice from './auth/AuthSlice';
 
 const rootReducer = combineReducers({
   AuthSlice
