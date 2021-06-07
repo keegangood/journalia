@@ -1,0 +1,40 @@
+//fonts
+// @import url('https://fonts.googleapis.com/css2?family=Poiret+One&family=Limelight&display=swap');
+// $primary-font: 'Poiret One', cursive;
+// $secondary-font: 'Limelight', cursive;
+@import url('https://fonts.googleapis.com/css2?family=Ovo&family=Quattrocento+Sans:wght@400;700&display=swap');
+
+$primary-font: 'Quattrocento Sans', sans-serif;
+$secondary-font: 'Ovo', serif;
+
+$body-bg-landscape: url(../assets/img/old_parchment_landscape.jpg);
+$body-bg-portrait: url(../assets/img/old_parchment_portrait.jpg);
+
+// colors
+$copper: #A8763E;
+$light-copper: adjust-color($copper, $lightness:15%);
+
+$old-lace: #f7f3e3;
+$light-old-lace: adjust-color($old-lace, $lightness:15%);
+
+
+$cultured: #ecf0f1;
+$light-cultured: adjust-color($cultured, $lightness:15%);
+
+$barn-red: #6f1a07;
+$light-barn-red: adjust-color($barn-red, $lightness:15%);
+
+
+$bistre: #2b2118;
+$light-bistre: adjust-color($bistre, $lightness:15%);
+
+
+$colors: $copper, 
+         $light-copper, 
+         $old-lace, 
+         $cultured, 
+         $light-cultured, 
+         $barn-red, 
+         $light-barn-red, 
+         $bistre,
+         $light-bistre;

@@ -1,0 +1,28 @@
+@use './journalia-variables.scss' as *;
+@use './journalia-mixins.scss' as *;
+
+#homepage {
+    background-color: adjust-color($cultured, $alpha: -.2);
+
+    @include flex($justify-content: center);
+
+    position: relative;
+    height: 100vh;
+
+    .boxes {
+      @include flex($justify-content: center);
+      width: 100%;
+      
+      @for $i from 1 through length($colors){
+        #box#{$i}{
+          height: 100px;
+          width: 100px;
+          background-color: nth($colors, $i);
+        }
+      }
+    }
+    
+    h1 {
+      font-family: $secondary-font;
+    }
+  } 
