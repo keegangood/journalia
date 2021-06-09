@@ -2,7 +2,7 @@
 @use '../scss/bootstrap-config.scss';
 @use '../scss/journalia-mixins.scss' as *;
 
-// 
+//
 * {
   font-family: $secondary-font;
   font-weight: 800;
@@ -15,25 +15,34 @@ body {
   background-attachment: fixed;
 }
 
-
 #main-container {
   display: flex;
 
   flex-direction: column;
 
-  position:relative;
+  position: relative;
 }
 
 .page-container {
-  background-color: adjust-color($cultured, $alpha: -.2);
+  background-color: adjust-color($cultured, $alpha: -0.2);
 
-  @include flex($justify-content: center);
+  @include flex($dir: column, $align-items: center);
 
   position: relative;
   height: 100vh;
 }
 
-@media only screen and (max-width: 768px){
+.logo-sm {
+  svg {
+    @include rectangle(40px);
+  }
+}
+
+.large-first-letter{
+  font-size: 2rem;
+}
+
+@media only screen and (max-width: 768px) {
   #background-img {
     background-image: $body-bg-portrait;
   }
