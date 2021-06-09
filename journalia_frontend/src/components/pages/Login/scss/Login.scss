@@ -1,0 +1,43 @@
+@use '../../../../scss/journalia-mixins.scss' as *;
+@use '../../../../scss/journalia-variables.scss' as *;
+
+#login-page {
+    @include border-radius(10px);
+
+    font-family: $secondary-font;
+
+
+    .logo-sm {
+        svg {
+            margin: 0.5rem;
+        }
+    }
+
+    #login-header {
+        @include flex($align-items: center);
+        font-size: 2rem;
+    }
+
+    #app-title {
+        letter-spacing: 1.5px;
+    }
+
+    .login-title {
+        font-size: 1.5rem;
+    }
+
+    #login-form-container {
+        @include border-radius(10px);
+        background-color: $old-lace;
+
+        border: 1px solid $lighter-copper;
+            
+        margin-top: 1rem;
+
+        width: 50%;
+    }
+
+    #signup-link {
+        font-family: $primary-font;
+    }
+}
