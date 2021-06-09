@@ -1,5 +1,5 @@
 import React from 'react';
-import '../../scss/navbar.scss';
+import './scss/Navbar.scss';
 
 import { ReactComponent as Logo } from '../../assets/img/Logo.svg';
 
@@ -13,10 +13,10 @@ const Navbar = () => {
 
                 <ul className="navbar-nav">
                     <li className="nav-item d-flex">
-                        <a href="#" className="nav-link">Sign up</a>
+                        <a href="/signup" className="nav-link">Sign up</a>
                     </li>
                     <li className="nav-item d-flex">
-                        <a href="#" className="nav-link">Log in</a>
+                        <a href="/login" className="nav-link">Log in</a>
                     </li>
                 </ul>
             </div>
