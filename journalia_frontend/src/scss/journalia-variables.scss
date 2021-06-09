@@ -13,6 +13,7 @@ $body-bg-portrait: url(../assets/img/old_parchment_portrait.jpg);
 // colors
 $copper: #A8763E;
 $light-copper: adjust-color($copper, $lightness:15%);
+$lighter-copper: adjust-color($copper, $lightness:33%);
 
 $old-lace: #f7f3e3;
 $light-old-lace: adjust-color($old-lace, $lightness:15%);
