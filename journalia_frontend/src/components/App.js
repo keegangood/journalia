@@ -7,7 +7,7 @@ import Navbar from '../components/layout/Navbar';
 import MobileNav from '../components/layout/MobileNav';
 
 import Homepage from '../components/pages/Homepage/Homepage';
-import Login from './pages/Login/Login';
+import UserAuth from './pages/UserAuth/UserAuth';
 
 const history = createBrowserHistory();
 
@@ -22,8 +22,12 @@ function App() {
         Eventually this will be based on isAuthenticated */}
         {history.location.pathname !== '/login' && history.location.pathname !== '/signup' && <Navbar />}
         <Route exact path="/" component={Homepage} />
-        <Route exact path="/login" component={Login} />
-        {/* <Homepage /> */}
+        <Route exact path="/login">
+          <UserAuth pageAction={'login'} pageTitle={'Log in'}/>
+        </Route>
+        <Route exact path="/signup">
+          <UserAuth pageAction={'signup'} pageTitle={'Sign up'}/>
+        </Route>
       </Router>
     </div>
   );

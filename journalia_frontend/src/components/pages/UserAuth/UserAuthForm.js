@@ -1,10 +1,8 @@
-import React from 'react'
-import './scss/LoginForm.scss';
+import React from 'react';
 
-
-const LoginForm = () => {
+const UserAuthForm = ({ formAction, ...props }) => {
   return (
-    <form className="p-2 pb-4" id="login-form">
+    <form className="p-2 pb-4" id="user-auth-form">
       <div class="mb-4 form-group">
         <label for="exampleInputEmail1" class="form-label">Email address</label>
         <input type="email" class="form-control" id="exampleInputEmail1" />
@@ -16,11 +14,15 @@ const LoginForm = () => {
       <div class="mb-4 form-group">
         <button type="submit" class="btn btn-primary w-100" id="submit">Submit</button>
       </div>
-      <div class="mt-3">
-        <a href="#" className="mt-3 text-muted link-dark text-decoration-none small">Forgot your password?</a>
-      </div>
+      {formAction === 'login' && (
+        <div class="mt-3">
+          <a href="#" className="mt-3 text-muted primary-link text-decoration-none small">Forgot your password?</a>
+        </div>
+
+      )}
+
     </form>
   )
 }
 
-export default LoginForm
+export default UserAuthForm

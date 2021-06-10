@@ -1,7 +1,7 @@
 @use '../../../../scss/journalia-mixins.scss' as *;
 @use '../../../../scss/journalia-variables.scss' as *;
 
-#login-form {
+#user-auth-form {
     border-bottom: 1px solid $light-bistre;
 
     input {
@@ -12,6 +12,6 @@
     .form-label,
     .form-link {
         width: 100%;
-        font-family: $primary-font;
+        font-family: $secondary-font;
     }
 }

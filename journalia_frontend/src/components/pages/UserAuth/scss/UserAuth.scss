@@ -1,32 +1,29 @@
 @use '../../../../scss/journalia-mixins.scss' as *;
 @use '../../../../scss/journalia-variables.scss' as *;
 
-#login-page {
-    @include border-radius(10px);
-
-    font-family: $secondary-font;
-
-
+#user-auth-page {
     .logo-sm {
         svg {
             margin: 0.5rem;
         }
     }
 
-    #login-header {
+    #user-auth-header {
         @include flex($align-items: center);
         font-size: 2rem;
+        font-family: $secondary-font;
     }
 
     #app-title {
         letter-spacing: 1.5px;
     }
 
-    .login-title {
+    .user-auth-action-title {
         font-size: 1.5rem;
+        font-family: $secondary-font;
     }
 
-    #login-form-container {
+    #user-auth-form-container {
         @include border-radius(10px);
         background-color: $old-lace;
 
