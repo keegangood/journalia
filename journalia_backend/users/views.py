@@ -366,7 +366,7 @@ def user_detail(request, pk):
             response.status_code = status.HTTP_202_ACCEPTED
             return response
 
-        response.data = {'msg': serialized_user.errors}
+        response.data = {'msg': [msg for msg in serialized_user.errors]}
         response.status_code = status.HTTP_400_BAD_REQUEST
         return response
 
