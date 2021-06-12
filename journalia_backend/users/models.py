@@ -42,7 +42,7 @@ class User(AbstractUser):
     username = None
 
     username = models.CharField(_('username'), max_length=20, unique=True, error_messages={
-                                'unique': 'This username has already been registered.'})
+                                'unique': 'This username has already been registered.'}, blank=True, null=True)
 
     email = models.EmailField(
         'email address',
