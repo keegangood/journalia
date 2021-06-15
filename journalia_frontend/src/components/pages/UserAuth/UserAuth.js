@@ -2,10 +2,6 @@ import { React, useEffect } from "react";
 import { useDispatch, useSelector, connect } from "react-redux";
 import { unwrapResult } from "@reduxjs/toolkit";
 
-import axios from "axios";
-import setAxiosAccessToken from "../../../utils/setAxiosAccessToken";
-import setAxiosBaseUrl from "../../../utils/setAxiosBaseUrl";
-
 import "./scss/UserAuth.scss";
 import UserAuthForm from "./UserAuthForm";
 import { ReactComponent as Logo } from "../../../assets/img/Logo.svg";
@@ -51,6 +47,8 @@ const SignupExtra = (
 const UserAuth = ({ pageAction, pageTitle, ...props }) => {
   const dispatch = useDispatch();
 
+  let { isAuthenticated } = useSelector((state) => state.auth);
+
   const callApi = async (formData) => {
     if (pageAction === "login") {
       const { email, password } = formData;
@@ -58,24 +56,22 @@ const UserAuth = ({ pageAction, pageTitle, ...props }) => {
       dispatch(login({ email, password }))
         .then(unwrapResult)
         .then((res) => {
-          
-          console.log('res',res)
-
-          // if the response contained an accessToken (ie successful response)
-          if (res.accessToken) {
-            dispatch(loadUser(res.accessToken));
-          } else {
-            // if the response didn't contain an accessToken (ie response failed)
-            dispatch(setMessages(res.messages));
-          }
+          console.log("res", res);
         })
         .catch((err) => {
-          console.log('FAIL')
+          console.log("FAIL");
         });
     } else if (pageAction === "signup") {
       // register()
     }
   };
+
+  useEffect(() => {
+    console.log(isAuthenticated);
+    if (isAuthenticated) {
+      props.history.push("/");
+    }
+  }, [props.history, isAuthenticated]);
 
   return (
     <div

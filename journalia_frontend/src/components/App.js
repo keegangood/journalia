@@ -1,5 +1,5 @@
 import "./App.scss";
-import { BrowserRouter as Router, Route, useLocation } from "react-router-dom";
+import { Router, Route, useLocation } from "react-router-dom";
 
 import { configureStore, applyMiddleware } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
@@ -18,21 +18,19 @@ const history = createBrowserHistory();
 
 let store = configureStore({ reducer: rootReducer }, applyMiddleware(thunk));
 
-function App() {
+function App(props) {
   return (
     <Provider store={store}>
       <div className="app container-fluid p-0 flex" id="main-container">
-        <Router>
+        <Router history={history}>
           {/* show nav unless on login or signup pages.
         Eventually this will be based on isAuthenticated */}
           {history.location.pathname !== "/login" &&
-            history.location.pathname !== "/signup" && <Navbar />}
+            history.location.pathname !== "/signup" ? <Navbar /> : ''}
           <Route exact path="/" component={Homepage} />
-          <Route exact path="/login">
-            <UserAuth pageAction={"login"} pageTitle={"Log in"} />
-          </Route>
+          <Route exact path="/login" render={(props)=><UserAuth pageAction={"login"} pageTitle={"Log in"}  history={history}/> } />
           <Route exact path="/signup">
-            <UserAuth pageAction={"signup"} pageTitle={"Sign up"} />
+            <UserAuth pageAction={"signup"} pageTitle={"Sign up"}/>
           </Route>
         </Router>
       </div>

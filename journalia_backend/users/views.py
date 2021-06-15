@@ -130,7 +130,8 @@ def login(request):
     # return the access token in the reponse
     response.data = {
         'accessToken': access_token,
-        'messages': ['Login successful!']
+        'messages': ['Login successful!'],
+        'user': UserDetailSerializer(user).data
     }
     response.status_code = status.HTTP_200_OK
     return response

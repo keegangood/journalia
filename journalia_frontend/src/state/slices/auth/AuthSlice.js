@@ -4,7 +4,7 @@ const initialState = {
   accessToken: null, // logged in user's current access token
   isAuthenticated: false, // boolean indicating if a user is logged in
   user: null, // object with auth user data
-  status: "idle", // status of async operation
+  status: "IDLE", // status of async operation ['IDLE', 'PENDING', 'SUCCESS', 'FAIL']
   messages: [], // response messages
 };
 
@@ -102,24 +102,27 @@ const AuthSlice = createSlice({
   },
   extraReducers: {
     [login.pending]: (state, action) => {
-      state.formData = action.meta.arg;
+      if(state.status === 'idle'){
+
+      }
     },
     [login.fulfilled]: (state, action) => {
       state.accessToken = action.payload.accessToken;
       state.messages = action.payload.messages;
       state.isAuthenticated = true;
+      state.user = action.payload.user;
       state.formData = {};
     },
     [login.rejected]: (state, action) => {
       state.messages = action.payload.messages;
       state.isAuthenticated = false;
     },
-    [loadUser.fulfilled]: (state, action) => {
-      state.user = action.payload.user;
-    },
-    [loadUser.rejected]: (state, action) => {
-      state.messages = action.payload.messages;
-    },
+    // [loadUser.fulfilled]: (state, action) => {
+    //   state.user = action.payload.user;
+    // },
+    // [loadUser.rejected]: (state, action) => {
+    //   state.messages = action.payload.messages;
+    // },
   },
 });
 
