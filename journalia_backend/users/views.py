@@ -290,7 +290,11 @@ def extend_token(request):
     # generate new access token for the user
     new_access_token = generate_access_token(user)
 
-    response.data = {'accessToken': new_access_token}
+    response.data = {
+        'accessToken': new_access_token,
+        'user':UserDetailSerializer(user).data
+    }
+    
     return response
 
 
