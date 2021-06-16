@@ -8,7 +8,7 @@ import { ReactComponent as Logo } from "../../../assets/img/Logo.svg";
 
 import {
   login,
-  loadUser,
+  requestAccessToken,
   setUser,
   setMessages,
   setErrors,
@@ -53,19 +53,21 @@ const UserAuth = ({ pageAction, pageTitle, ...props }) => {
     if (pageAction === "login") {
       const { email, password } = formData;
 
-      dispatch(login({ email, password }))
-        
+      dispatch(login({ email, password }));
     } else if (pageAction === "signup") {
       // dispatch(register({formData}))
     }
   };
 
   useEffect(() => {
-    console.log(isAuthenticated);
+    const requestToken = async () => {
+      await dispatch(requestAccessToken());
+    };
+    requestToken();
     if (isAuthenticated) {
       props.history.push("/");
     }
-  }, [props.history, isAuthenticated]);
+  }, [props.history, isAuthenticated, requestAccessToken, dispatch]);
 
   return (
     <div

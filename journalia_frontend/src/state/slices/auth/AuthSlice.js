@@ -17,7 +17,7 @@ const headers = {
 };
 
 export const login = createAsyncThunk(
-  "users/loginStatus",
+  "users/login",
   async (formData, { rejectWithValue }) => {
     const response = await fetch(BASE_URL + "/login/", {
       method: "POST",
@@ -26,12 +26,31 @@ export const login = createAsyncThunk(
       body: JSON.stringify(formData),
     });
 
-    const data = await response.json()
+    const data = await response.json();
 
-    if(response.ok){
-      return data
+    if (response.ok) {
+      return data;
     }
-    return rejectWithValue(data)
+    return rejectWithValue(data);
+  }
+);
+
+export const requestAccessToken = createAsyncThunk(
+  "users/requestAccessToken",
+  async (_, { rejectWithValue }) => {
+      const response = await fetch(BASE_URL + "/token/", {
+        method: "GET",
+        headers: headers,
+        credentials: "include", // to set cookies
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        return data;
+      }
+      return rejectWithValue(data);
+    
   }
 );
 
@@ -99,12 +118,18 @@ const AuthSlice = createSlice({
       state.messages = action.payload.messages;
       state.isAuthenticated = false;
     },
-    // [loadUser.fulfilled]: (state, action) => {
-    //   state.user = action.payload.user;
-    // },
-    // [loadUser.rejected]: (state, action) => {
-    //   state.messages = action.payload.messages;
-    // },
+
+    [requestAccessToken.fulfilled]: (state,action) => {
+      state.accessToken = action.payload.accessToken
+      state.isAuthenticated = true
+      state.user = action.payload.user
+    },
+    [requestAccessToken.rejected]: (state,action) => {
+      state.accessToken = null
+      state.isAuthenticated = false
+      state.user = null
+      state.errors = action.payload
+    }
   },
 });
 
