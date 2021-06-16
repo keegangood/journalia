@@ -54,15 +54,9 @@ const UserAuth = ({ pageAction, pageTitle, ...props }) => {
       const { email, password } = formData;
 
       dispatch(login({ email, password }))
-        .then(unwrapResult)
-        .then((res) => {
-          console.log("res", res);
-        })
-        .catch((err) => {
-          console.log("FAIL");
-        });
+        
     } else if (pageAction === "signup") {
-      // register()
+      // dispatch(register({formData}))
     }
   };
 
