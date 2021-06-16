@@ -19,38 +19,21 @@ const headers = {
 export const login = createAsyncThunk(
   "users/loginStatus",
   async (formData, { rejectWithValue }) => {
-    // const { accessToken, loading } = getState().auth
-    // if (loading !== 'pending' || accessToken) {
-    //   return
-    // }
-    try {
-      const response = await fetch(BASE_URL + "/login/", {
-        method: "POST",
-        headers: headers,
-        credentials: "include", // to set cookies
-        body: JSON.stringify(formData),
-      });
-
-      return response.json();
-    } catch (err) {
-      return rejectWithValue(err.response.data);
-    }
-  }
-);
-
-export const loadUser = createAsyncThunk(
-  "users/loadUserStatus",
-  async (accessToken, thunkAPI) => {
-    const response = await fetch(BASE_URL + "/auth/", {
-      method: "GET",
+    const response = await fetch(BASE_URL + "/login/", {
+      method: "POST",
+      headers: headers,
       credentials: "include", // to set cookies
-      headers: { ...headers, authorization: `Token ${accessToken}` },
+      body: JSON.stringify(formData),
     });
 
-    return response.json();
+    const data = await response.json()
+
+    if(response.ok){
+      return data
+    }
+    return rejectWithValue(data)
   }
 );
-
 
 // export const register = async (formData) => {
 //   await axios
@@ -102,8 +85,7 @@ const AuthSlice = createSlice({
   },
   extraReducers: {
     [login.pending]: (state, action) => {
-      if(state.status === 'idle'){
-
+      if (state.status === "idle") {
       }
     },
     [login.fulfilled]: (state, action) => {
