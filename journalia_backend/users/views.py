@@ -1,4 +1,5 @@
 import jwt
+from datetime import datetime
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -287,14 +288,19 @@ def extend_token(request):
         # secure=True # for https connections only
     )
 
+    
     # generate new access token for the user
     new_access_token = generate_access_token(user)
 
+    # update user last_login time
+    user.last_login = datetime.now()
+    user.save()
+
     response.data = {
         'accessToken': new_access_token,
-        'user':UserDetailSerializer(user).data
+        'user': UserDetailSerializer(user).data
     }
-    
+
     return response
 
 
