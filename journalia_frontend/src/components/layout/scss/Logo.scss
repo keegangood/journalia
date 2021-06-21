@@ -1,0 +1,14 @@
+@use '../../../scss/journalia-mixins.scss' as *;
+
+.logo-sm {
+  svg {
+    @include rectangle(4rem);
+  }
+}
+
+.logo-lg {
+    svg {
+        @include rectangle(12rem);
+    }
+}
+
