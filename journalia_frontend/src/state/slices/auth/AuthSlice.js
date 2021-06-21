@@ -1,19 +1,16 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-
 const initialState = {
   accessToken: null, // logged in user's current access token
   isAuthenticated: false, // boolean indicating if a user is logged in
   user: null, // object with auth user data
   status: "IDLE", // status of async operation ['IDLE', 'PENDING', 'SUCCESS', 'FAIL']
   messages: [], // response messages
+  errors: [], // response errors
 };
 
 const BASE_URL = "http://localhost:8000/users";
-
-// Axios config object
 const headers = {
   "Content-Type": "application/json",
-  // withCredentials: true, // required to set the refreshtoken cookie in the browser!!!
 };
 
 export const login = createAsyncThunk(
@@ -35,51 +32,63 @@ export const login = createAsyncThunk(
   }
 );
 
-export const requestAccessToken = createAsyncThunk(
-  "users/requestAccessToken",
-  async (_, { rejectWithValue }) => {
-      const response = await fetch(BASE_URL + "/token/", {
-        method: "GET",
-        headers: headers,
-        credentials: "include", // to set cookies
-      });
+export const register = createAsyncThunk(
+  "users/register",
+  async (formData, { rejectWithValue }) => {
+    const response = await fetch(BASE_URL + "/token/", {
+      method: "POST",
+      headers: headers,
+      credentials: "include", // to set cookies
+      body: JSON.stringify(formData),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      if (response.ok) {
-        return data;
-      }
-      return rejectWithValue(data);
-    
+    if (response.ok) {
+      return data;
+    }
+    return rejectWithValue(data);
   }
 );
 
-// export const register = async (formData) => {
-//   await axios
-//     .post(BASE_URL + "/", formData, config)
-//     .then((res) => {
-//       console.log(res);
-//     })
-//     .catch((err) => console.log(err.response));
-// };
+export const requestAccessToken = createAsyncThunk(
+  "users/requestAccessToken",
+  async (_, { rejectWithValue }) => {
+    const response = await fetch(BASE_URL + "/token/", {
+      method: "GET",
+      headers: headers,
+      credentials: "include", // to set cookies
+    });
 
-// export const requestAccessToken = async () => {
-//   await axios
-//     .get(BASE_URL + "/token/")
-//     .then((res) => {
-//       console.log(res);
-//     })
-//     .catch((err) => console.log(err));
-// };
+    const data = await response.json();
 
-// export const logout = async (url) => {
-//   await axios
-//     .post(BASE_URL + "/logout/")
-//     .then((res) => {
-//       console.log(res);
-//     })
-//     .catch((err) => console.log(err));
-// };
+    if (response.ok) {
+      return data;
+    }
+    return rejectWithValue(data);
+  }
+);
+
+export const logout = createAsyncThunk(
+  "users/requestAccessToken",
+  async (user, { rejectWithValue }) => {
+    const response = await fetch(BASE_URL + "/logout/", {
+      method: "POST",
+      headers: headers,
+      credentials: "include", // to set cookies
+      body: JSON.stringify({user})
+    });
+
+    const data = await response.json();
+
+    console.log(data)
+
+    if (response.ok) {
+      return data;
+    }
+    return rejectWithValue(data);
+  }
+);
 
 const AuthSlice = createSlice({
   name: "auth",
@@ -92,48 +101,54 @@ const AuthSlice = createSlice({
     },
     setMessages(state, action) {
       return {
-        messages: [...state.messages, action.payload],
-      };
-    },
-
-    setUser(state, action) {
-      return {
-        user: action.payload,
+        messages: [...state.messages, ...action.payload],
       };
     },
   },
   extraReducers: {
     [login.pending]: (state, action) => {
-      if (state.status === "idle") {
+      if (state.status === "IDLE") {
+        state.status = "PENDING";
       }
     },
     [login.fulfilled]: (state, action) => {
-      state.accessToken = action.payload.accessToken;
-      state.messages = action.payload.messages;
-      state.isAuthenticated = true;
-      state.user = action.payload.user;
-      state.formData = {};
+      if (action.payload) {
+        state.accessToken = action.payload.accessToken;
+        state.isAuthenticated = true;
+        state.user = action.payload.user;
+        state.messages = [...state.messages, ...action.payload.messages];
+        state.formData = {};
+        state.status = "IDLE";
+      }
     },
     [login.rejected]: (state, action) => {
-      state.messages = action.payload.messages;
+      state.accessToken = null;
       state.isAuthenticated = false;
+      state.user = null;
+      state.messages = [...state.messages, ...action.payload.messages];
+      state.formData = {};
+      state.status = "IDLE";
     },
 
-    [requestAccessToken.fulfilled]: (state,action) => {
-      state.accessToken = action.payload.accessToken
-      state.isAuthenticated = true
-      state.user = action.payload.user
+    [requestAccessToken.pending]: (state, action) => {
+      state.status = "PENDING";
     },
-    [requestAccessToken.rejected]: (state,action) => {
-      state.accessToken = null
-      state.isAuthenticated = false
-      state.user = null
-      state.errors = action.payload
-    }
+    [requestAccessToken.fulfilled]: (state, action) => {
+      state.accessToken = action.payload.accessToken;
+      state.isAuthenticated = true;
+      state.user = action.payload.user;
+      state.status = "IDLE";
+    },
+    [requestAccessToken.rejected]: (state, action) => {
+      state.accessToken = null;
+      state.isAuthenticated = false;
+      state.user = null;
+      state.errors = [...state.errors, "loading token failed"];
+      state.status = "IDLE";
+    },
   },
 });
 
-export const { setAccessToken, setUser, setErrors, setMessages } =
-  AuthSlice.actions; //setMessages, setUser, setIsAuthenticated } =
+export const { setAccessToken, setErrors, setMessages } = AuthSlice.actions;
 
 export default AuthSlice.reducer;
