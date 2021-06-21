@@ -1,0 +1,41 @@
+@use '../../../scss/journalia-variables.scss' as *;
+@use '../../../scss/journalia-mixins.scss' as *;
+
+#loading-modal {
+  @include rectangle(100vh, 100vw);
+
+  background-color: $cultured;
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+
+  opacity: 1;
+  transition: all 0.3s ease-in-out;
+
+  .loading-spinner {
+    svg {
+      @include border-radius(50%);
+      background-color: $old-lace;
+      border: 2px double $bistre;
+      box-shadow: 0 0 3px $light-bistre;
+      color: $light-barn-red;
+
+      // spin animation
+      animation-name: rotateSpinner;
+      animation-duration: 2.5s;
+      animation-iteration-count: infinite;
+      animation-timing-function: ease-in-out;
+
+      @keyframes rotateSpinner {
+        from {
+          transform: rotate(180deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    }
+  }
+}
