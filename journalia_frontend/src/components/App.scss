@@ -2,9 +2,9 @@
 @use '../scss/bootstrap-config.scss';
 @use '../scss/journalia-mixins.scss' as *;
 
+@use './layout/scss/Logo.scss';
+
 //
-
-
 body {
   background-image: $body-bg-landscape;
   background-size: 100% 100%;
@@ -12,29 +12,22 @@ body {
   background-attachment: fixed;
 
   font-family: $primary-font;
+
 }
+
 
 #main-container {
   display: flex;
 
   flex-direction: column;
 
-  position: relative;
 }
 
 .page-container {
   background-color: adjust-color($cultured, $alpha: -0.2);
-
   @include flex($dir: column, $align-items: center);
 
-  position: relative;
-  height: 100vh;
-}
-
-.logo-sm {
-  svg {
-    @include rectangle(40px);
-  }
+  min-height: 70vh;
 }
 
 .large-first-letter{
