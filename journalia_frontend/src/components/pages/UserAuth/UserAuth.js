@@ -1,17 +1,19 @@
-import { React, useEffect } from "react";
+import { React, useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector, connect } from "react-redux";
 import { unwrapResult } from "@reduxjs/toolkit";
 
 import "./scss/UserAuth.scss";
 import UserAuthForm from "./UserAuthForm";
+import Loading from "../../layout/Loading";
 import { ReactComponent as Logo } from "../../../assets/img/Logo.svg";
 
 import {
-  login,
-  requestAccessToken,
-  setUser,
   setMessages,
   setErrors,
+  login,
+  register,
+  requestAccessToken,
 } from "../../../state/slices/auth/AuthSlice";
 
 const LoginExtra = (
@@ -46,42 +48,41 @@ const SignupExtra = (
 
 const UserAuth = ({ pageAction, pageTitle, ...props }) => {
   const dispatch = useDispatch();
+  // let history = useHistory();
 
-  let { isAuthenticated } = useSelector((state) => state.auth);
+  // if accessToken is loaded, set to true
+  const [redirecting, setRedirecting] = useState(false);
+
+  const { isAuthenticated, status } = useSelector((state) => state.auth);
 
   const callApi = async (formData) => {
     if (pageAction === "login") {
       const { email, password } = formData;
 
-      dispatch(login({ email, password }));
+      dispatch(login({ email, password }))
+        .then(unwrapResult)
+        .then((res) => {
+          props.history.push("/");
+        })
+        .catch((err) => console.log(err));
     } else if (pageAction === "signup") {
-      // dispatch(register({formData}))
+      dispatch(register({ formData }));
     }
   };
-
-  useEffect(() => {
-    const requestToken = async () => {
-      await dispatch(requestAccessToken());
-    };
-    requestToken();
-    if (isAuthenticated) {
-      props.history.push("/");
-    }
-  }, [props.history, isAuthenticated, requestAccessToken, dispatch]);
 
   return (
     <div
       className="
           container
           page-container 
+          w-90
           flex flex-column 
           justify-content-center
-          py-5
-          mt-5 mt-lg-0"
+          py-5"
       id="user-auth-page"
     >
-      <div className="row">
-        <div className="col col-11 mx-auto offset-lg-1 col-md-10 col-xl-6">
+      <div className="row w-100">
+        <div className="col col-11 mx-auto offset-lg-1 col-md-10 col-lg-4">
           <div className="row" id="user-auth-form-container">
             <div
               className="col col-md-10  offset-1  pt-4"
