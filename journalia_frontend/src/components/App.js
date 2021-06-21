@@ -1,12 +1,11 @@
 import "./App.scss";
-import { Router, Route, useLocation } from "react-router-dom";
+import { Router, Route, useHistory } from "react-router-dom";
+import { createBrowserHistory } from "history";
 
 import { configureStore, applyMiddleware } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 import rootReducer from "../state/slices";
 import thunk from "redux-thunk";
-
-import { createBrowserHistory } from "history";
 
 import Navbar from "../components/layout/Navbar";
 import MobileNav from "../components/layout/MobileNav";
@@ -14,28 +13,49 @@ import MobileNav from "../components/layout/MobileNav";
 import Homepage from "../components/pages/Homepage/Homepage";
 import UserAuth from "./pages/UserAuth/UserAuth";
 
-const history = createBrowserHistory();
-
 let store = configureStore({ reducer: rootReducer }, applyMiddleware(thunk));
 
-function App(props) {
+let history = createBrowserHistory();
+
+const App = (props) => {
   return (
     <Provider store={store}>
-      <div className="app container-fluid p-0 flex" id="main-container">
-        <Router history={history}>
+      <Router history={history}>
+        <div className="app container-fluid p-0 flex" id="main-container">
           {/* show nav unless on login or signup pages.
         Eventually this will be based on isAuthenticated */}
-          {history.location.pathname !== "/login" &&
-            history.location.pathname !== "/signup" ? <Navbar /> : ''}
+          {true ? <Navbar /> : ""}
           <Route exact path="/" component={Homepage} />
-          <Route exact path="/login" render={(props)=><UserAuth pageAction={"login"} pageTitle={"Log in"}  history={history}/> } />
-          <Route exact path="/signup">
-            <UserAuth pageAction={"signup"} pageTitle={"Sign up"}/>
-          </Route>
-        </Router>
-      </div>
+          <Route
+            exact
+            path="/login"
+            render={(props) => {
+              return (
+                <UserAuth
+                  pageAction={"login"}
+                  pageTitle={"Log in"}
+                  history={history}
+                />
+              );
+            }}
+          />
+          <Route
+            exact
+            path="/signup"
+            render={(props) => {
+              return (
+                <UserAuth
+                  pageAction={"signup"}
+                  pageTitle={"Sign up"}
+                  history={history}
+                />
+              );
+            }}
+          ></Route>
+        </div>
+      </Router>
     </Provider>
   );
-}
+};
 
 export default App;
