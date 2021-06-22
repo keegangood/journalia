@@ -2,45 +2,59 @@
 @use '../../../scss/journalia-mixins.scss' as *;
 
 #desktop-nav {
-    background-color: $barn-red;
+  background-color: $barn-red;
 
-    // logo and nav links
-    #navbar-contents {
-        // logo
-        svg {
-            @include rectangle(40px);
+  // logo and nav links
+  #navbar-contents {
+    // logo
+    svg {
+      @include rectangle(40px);
 
-            transition: all .3s ease-in-out;
+      transition: all 0.3s ease-in-out;
 
-            &:hover {
-                width: 45px;
-            }
-        }
-
-        // nav items
-        .navbar-nav {
-            height: 100%;
-            
-            .nav-item {
-                min-height: 50%;
-                padding: 0 0.75rem;
-                border: 4px solid $barn-red;
-                border-radius: 8px;
-                border-style: double;
-                margin: .2rem 0;
-                transition: all 0.2s ease-in-out;
-
-                .nav-link {
-                    padding: .2rem;
-                    font-family: $primary-font;
-                    letter-spacing: 2px;
-                    text-transform: uppercase;
-                    font-weight: 400;
-                }
-                &:hover {
-                    border-bottom: 4px double $light-barn-red;
-                }
-            }
-        }
+      &:hover {
+        width: 45px;
+      }
     }
+
+    .dropdown-arrow {
+      svg {
+        @include rectangle(25px);
+        color: $light-copper;
+      }
+
+      
+
+      &:hover {
+          cursor: pointer;
+          color: $cultured;
+      }
+    }
+
+    // nav items
+    .navbar-nav {
+      height: 100%;
+
+      .nav-item {
+        min-height: 50%;
+        padding: 0 0.75rem;
+        border: 4px solid $barn-red;
+        border-radius: 8px;
+        border-style: double;
+        margin: 0.2rem 0;
+        transition: all 0.2s ease-in-out;
+
+        .nav-link {
+          padding: 0.2rem;
+          font-family: $primary-font;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          font-weight: 400;
+        }
+        &:hover {
+          border-bottom: 4px double $light-barn-red;
+        }
+      }
+    }
+  }
 }

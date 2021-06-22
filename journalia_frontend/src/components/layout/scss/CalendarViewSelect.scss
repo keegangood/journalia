@@ -1,0 +1,17 @@
+@use '../../../scss/journalia-variables.scss' as *;
+
+.dropdown {
+    font-family: $primary-font;
+
+  .dropdown-menu {
+    padding: 0;
+  }
+  .dropdown-item {
+    background-color: $light-old-lace;
+    padding: 10px;
+
+    &:hover {
+        background-color: $old-lace;
+    }
+  }
+}

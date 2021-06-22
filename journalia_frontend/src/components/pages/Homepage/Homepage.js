@@ -6,13 +6,14 @@ import { logout } from "../../../state/slices/auth/AuthSlice";
 
 import { useDispatch, useSelector, connect } from "react-redux";
 
+import CalendarViewSelect from '../../layout/CalendarViewSelect';
 
 const Homepage = () => {
   const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   return (
-    <div className="container-fluid w-90 page-container" id="homepage">
+    <div className="container-fluid page-container" id="homepage">
       <div className="boxes">
         <div className="box" id="box1"></div>
         <div className="box" id="box2"></div>
@@ -28,6 +29,8 @@ const Homepage = () => {
         <div className="box" id="box12"></div>
         <div className="box" id="box13"></div>
       </div>
+
+      <CalendarViewSelect />
 
       <button
         className="btn btn-lg btn-primary"

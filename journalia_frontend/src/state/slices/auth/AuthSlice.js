@@ -146,6 +146,22 @@ const AuthSlice = createSlice({
       state.errors = [...state.errors, "loading token failed"];
       state.status = "IDLE";
     },
+
+    [logout.pending]: (state,action) => {
+      state.pending = "PENDING";
+    },
+    [logout.fulfilled]: (state,action) => {
+      state.accessToken = null;
+      state.isAuthenticated = false;
+      state.user = null;
+      state.status =  "IDLE";
+    },
+    [logout.rejected]: (state,action) => {
+      state.accessToken = null;
+      state.isAuthenticated = false;
+      state.user = null;
+      state.status =  "IDLE";
+    }
   },
 });
 
