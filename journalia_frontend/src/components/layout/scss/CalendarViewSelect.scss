@@ -1,17 +1,34 @@
 @use '../../../scss/journalia-variables.scss' as *;
 
+.btn:focus,
+.btn:active:focus,
+.btn.active:focus {
+  outline: none !important;
+  outline-style: none;
+}
 .dropdown {
-    font-family: $primary-font;
+  color: $cultured;
+
+  font-family: $primary-font;
 
   .dropdown-menu {
+    background-color: $barn-red;
     padding: 0;
+    .active {
+      background-color: $light-barn-red;
+      color: $cultured;
+    }
   }
+
   .dropdown-item {
-    background-color: $light-old-lace;
+    background-color: $barn-red;
+    border-radius: 5px;
     padding: 10px;
 
+    color: $cultured;
+
     &:hover {
-        background-color: $old-lace;
+      background-color: $light-barn-red;
     }
   }
 }

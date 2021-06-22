@@ -17,10 +17,10 @@ const CalendarViewSelect = () => {
       title="Button"
       menuAlign="center"
       id="calendar-view-select"
-      active
+      className="mw-2"
     >
-      {viewOptions.map((viewOption) => (
-        <Dropdown.Item>{viewOption.label}</Dropdown.Item>
+      {viewOptions.map((viewOption, i) => (
+        <Dropdown.Item key={i} active={i === 0}>{viewOption.label}</Dropdown.Item>
       ))}
     </DropdownButton>
   );
