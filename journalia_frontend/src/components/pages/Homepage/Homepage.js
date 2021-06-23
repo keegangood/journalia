@@ -30,16 +30,14 @@ const Homepage = () => {
         <div className="box" id="box13"></div>
       </div>
 
-      <CalendarViewSelect />
-
-      <button
+      {/* <button
         className="btn btn-lg btn-primary"
         onClick={() => {
           dispatch(logout(user.id));
         }}
       >
         Log out
-      </button>
+      </button> */}
     </div>
   );
 };

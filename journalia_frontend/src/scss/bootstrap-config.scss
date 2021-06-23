@@ -9,6 +9,8 @@
 
 $theme-colors: (
   "primary": $barn-red,
+  "secondary": $copper,
+  "info": $light-copper,
 );
 
 $utilities: map-merge(

@@ -13,17 +13,25 @@ const viewOptions = [
 
 const CalendarViewSelect = () => {
   return (
-    <DropdownButton
-      title="Button"
-      menuAlign="center"
-      id="calendar-view-select"
-      className="mw-2"
-    >
+    <div className="flex">
       {viewOptions.map((viewOption, i) => (
-        <Dropdown.Item key={i} active={i === 0}>{viewOption.label}</Dropdown.Item>
+        <span className={"calendar-view-option " + (i === 1 ? "selected" : "")}>
+          {viewOption.label}
+        </span>
       ))}
-    </DropdownButton>
+    </div>
   );
 };
+//   <DropdownButton
+//     title="DAY"
+//     menuAlign="center"
+//     id="calendar-view-select"
+//   >
+//     {viewOptions.map((viewOption, i) => (
+//       <Dropdown.Item key={i} active={i === 0}>{viewOption.label}</Dropdown.Item>
+//     ))}
+//   </DropdownButton>
+// );
+// };
 
 export default CalendarViewSelect;
