@@ -1,11 +1,29 @@
 @use '../../../scss/journalia-variables.scss' as *;
+@use '../../../scss/journalia-mixins.scss' as *;
 
-.btn:focus,
-.btn:active:focus,
-.btn.active:focus {
-  outline: none !important;
-  outline-style: none;
+.calendar-view-option {
+  background-color: $light-copper;
+  color: $bistre;
+
+  padding: 5px 7px;
+
+  &:first-of-type {
+    @include border-radius(5px 0 0 5px);
+  }
+  &:last-of-type {
+    @include border-radius(0 5px 5px 0);
+  }
+
+  &:hover {
+    background-color: $copper;
+    cursor: pointer;
+  }
+
+  &.selected {
+    background-color: $copper;
+  }
 }
+
 .dropdown {
   color: $cultured;
 
