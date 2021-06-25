@@ -62,7 +62,7 @@ const UserAuth = ({ pageAction, pageTitle, ...props }) => {
       dispatch(login({ email, password }))
         .then(unwrapResult)
         .then((res) => {
-          props.history.push("/");
+          props.history.push("/app");
         })
         .catch((err) => console.log(err));
     } else if (pageAction === "signup") {
@@ -120,10 +120,11 @@ const UserAuth = ({ pageAction, pageTitle, ...props }) => {
 
 const mapStateToProps = (state) => {
   return {
-    accessToken: null, // logged in user's current access token
-    isAuthenticated: false, // boolean indicating if a user is logged in
-    messages: null, // response messages
-    user: null, // object with auth user data
+    accessToken: state.accessToken, // logged in user's current access token
+    isAuthenticated: state.isAuthenticated, // boolean indicating if a user is logged in
+    messages: state.messages, // response messages
+    user: state.user, // object with auth user data
+    authStatus: state.authStatus
   };
 };
 
