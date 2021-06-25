@@ -8,7 +8,6 @@ const UserAuthForm = ({ formAction, callApi, ...props }) => {
     username: "",
   });
 
-
   // add new form changes to state
   const onChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -17,31 +16,30 @@ const UserAuthForm = ({ formAction, callApi, ...props }) => {
     e.preventDefault();
 
     callApi(formData);
-
   };
 
   return (
     <form className="p-2 pb-4" id="user-auth-form" onSubmit={onSubmit}>
-      <div class="mb-4 form-group">
-        <label for="exampleInputEmail1" class="form-label">
+      <div className="mb-4 form-group">
+        <label htmlFor="exampleInputEmail1" className="form-label">
           Email address
         </label>
         <input
           type="email"
-          class="form-control"
+          className="form-control"
           id="exampleInputEmail1"
           name="email"
           value={formData.email}
           onChange={onChange}
         />
       </div>
-      <div class="mb-4 form-group">
-        <label for="exampleInputPassword1" class="form-label">
+      <div className="mb-4 form-group">
+        <label htmlFor="exampleInputPassword1" className="form-label">
           Password
         </label>
         <input
           type="password"
-          class="form-control"
+          className="form-control"
           id="exampleInputPassword1"
           name="password"
           value={formData.password}
@@ -50,13 +48,13 @@ const UserAuthForm = ({ formAction, callApi, ...props }) => {
       </div>
 
       {formAction === "signup" && (
-        <div class="mb-4 form-group">
-          <label for="exampleInputPassword1" class="form-label">
+        <div className="mb-4 form-group">
+          <label htmlFor="exampleInputPassword1" className="form-label">
             Confirm Password
           </label>
           <input
             type="password"
-            class="form-control"
+            className="form-control"
             id="exampleInputPassword1"
             name="password2"
             value={formData.password2}
@@ -65,13 +63,13 @@ const UserAuthForm = ({ formAction, callApi, ...props }) => {
         </div>
       )}
 
-      <div class="mb-4 form-group">
-        <button type="submit" class="btn btn-primary w-100" id="submit">
+      <div className="mb-4 form-group">
+        <button type="submit" className="btn btn-primary w-100" id="submit">
           Submit
         </button>
       </div>
       {formAction === "login" && (
-        <div class="mt-3">
+        <div className="mt-3">
           <a
             href="#"
             className="
