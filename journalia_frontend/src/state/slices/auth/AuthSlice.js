@@ -3,7 +3,7 @@ const initialState = {
   accessToken: null, // logged in user's current access token
   isAuthenticated: false, // boolean indicating if a user is logged in
   user: null, // object with auth user data
-  status: "IDLE", // status of async operation ['IDLE', 'PENDING', 'SUCCESS', 'FAIL']
+  authStatus: "PENDING", // status of async operation ['IDLE', 'PENDING', 'SUCCESS', 'FAIL']
   messages: [], // response messages
   errors: [], // response errors
 };
@@ -14,7 +14,7 @@ const headers = {
 };
 
 export const login = createAsyncThunk(
-  "users/login",
+  "auth/login",
   async (formData, { rejectWithValue }) => {
     const response = await fetch(BASE_URL + "/login/", {
       method: "POST",
@@ -33,7 +33,7 @@ export const login = createAsyncThunk(
 );
 
 export const register = createAsyncThunk(
-  "users/register",
+  "auth/register",
   async (formData, { rejectWithValue }) => {
     const response = await fetch(BASE_URL + "/token/", {
       method: "POST",
@@ -52,7 +52,7 @@ export const register = createAsyncThunk(
 );
 
 export const requestAccessToken = createAsyncThunk(
-  "users/requestAccessToken",
+  "auth/requestAccessToken",
   async (_, { rejectWithValue }) => {
     const response = await fetch(BASE_URL + "/token/", {
       method: "GET",
@@ -70,18 +70,16 @@ export const requestAccessToken = createAsyncThunk(
 );
 
 export const logout = createAsyncThunk(
-  "users/requestAccessToken",
+  "auth/logout",
   async (user, { rejectWithValue }) => {
     const response = await fetch(BASE_URL + "/logout/", {
       method: "POST",
       headers: headers,
       credentials: "include", // to set cookies
-      body: JSON.stringify({user})
+      body: JSON.stringify({ user }),
     });
 
     const data = await response.json();
-
-    console.log(data)
 
     if (response.ok) {
       return data;
@@ -107,19 +105,15 @@ const AuthSlice = createSlice({
   },
   extraReducers: {
     [login.pending]: (state, action) => {
-      if (state.status === "IDLE") {
-        state.status = "PENDING";
-      }
+        state.authStatus = "PENDING";
     },
     [login.fulfilled]: (state, action) => {
-      if (action.payload) {
         state.accessToken = action.payload.accessToken;
         state.isAuthenticated = true;
         state.user = action.payload.user;
         state.messages = [...state.messages, ...action.payload.messages];
         state.formData = {};
-        state.status = "IDLE";
-      }
+        state.authStatus = "IDLE";
     },
     [login.rejected]: (state, action) => {
       state.accessToken = null;
@@ -127,41 +121,41 @@ const AuthSlice = createSlice({
       state.user = null;
       state.messages = [...state.messages, ...action.payload.messages];
       state.formData = {};
-      state.status = "IDLE";
+      state.authStatus = "IDLE";
     },
 
     [requestAccessToken.pending]: (state, action) => {
-      state.status = "PENDING";
+        state.authStatus = "PENDING";
     },
     [requestAccessToken.fulfilled]: (state, action) => {
-      state.accessToken = action.payload.accessToken;
-      state.isAuthenticated = true;
-      state.user = action.payload.user;
-      state.status = "IDLE";
+        state.accessToken = action.payload.accessToken;
+        state.isAuthenticated = true;
+        state.user = action.payload.user;
+        state.authStatus = "IDLE";
     },
     [requestAccessToken.rejected]: (state, action) => {
       state.accessToken = null;
       state.isAuthenticated = false;
       state.user = null;
       state.errors = [...state.errors, "loading token failed"];
-      state.status = "IDLE";
+      state.authStatus = "IDLE";
     },
 
-    [logout.pending]: (state,action) => {
-      state.pending = "PENDING";
+    [logout.pending]: (state, action) => {
+      state.authStatus = "PENDING";
     },
-    [logout.fulfilled]: (state,action) => {
+    [logout.fulfilled]: (state, action) => {
       state.accessToken = null;
       state.isAuthenticated = false;
       state.user = null;
-      state.status =  "IDLE";
+      state.authStatus = "IDLE";
     },
-    [logout.rejected]: (state,action) => {
+    [logout.rejected]: (state, action) => {
       state.accessToken = null;
       state.isAuthenticated = false;
       state.user = null;
-      state.status =  "IDLE";
-    }
+      state.authStatus = "IDLE";
+    },
   },
 });
 
