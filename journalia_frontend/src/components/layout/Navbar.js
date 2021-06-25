@@ -8,7 +8,7 @@ import CalendarViewSelect from "./CalendarViewSelect";
 
 const Navbar = ({ isAuthenticated }) => {
   return (
-    <nav class="navbar navbar-expand-lg navbar-dark py-0" id="desktop-nav">
+    <nav className="navbar navbar-expand-lg navbar-dark" id="desktop-nav">
       <div className="container-fluid d-flex" id="navbar-contents">
         <a href="#" className="navbar-brand">
           <Logo />
