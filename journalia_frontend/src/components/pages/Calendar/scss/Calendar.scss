@@ -2,5 +2,5 @@
 @use '../../../../scss/journalia-mixins.scss' as *;
 
 #calendar-container {
-    background-color: $cultured;
+    background-color: adjust-color($cultured, $alpha: -.5);
 }
