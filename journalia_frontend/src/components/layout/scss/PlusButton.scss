@@ -2,10 +2,13 @@
 @use '../../../scss/journalia-mixins.scss' as *;
 
 #plus-button {
-        color: $barn-red;
-        background-color: $cultured;
-    svg {
-        height: 2.5rem;
-        width: 2.5rem;
-    }
+  color: $barn-red;
+  background-color: $cultured;
+  border-radius: 50%;
+  box-shadow: 0 0 3px $bistre;
+  
+  svg {
+      height: 2.5rem;
+      width: 2.5rem;
+  }
 }
