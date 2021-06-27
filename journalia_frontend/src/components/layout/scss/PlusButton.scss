@@ -1,0 +1,11 @@
+@use '../../../scss/journalia-variables.scss' as *;
+@use '../../../scss/journalia-mixins.scss' as *;
+
+#plus-button {
+        color: $barn-red;
+        background-color: $cultured;
+    svg {
+        height: 2.5rem;
+        width: 2.5rem;
+    }
+}
