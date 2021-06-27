@@ -5,7 +5,7 @@ import { createBrowserHistory } from "history";
 import { useDispatch, useSelector, connect } from "react-redux";
 import { unwrapResult } from "@reduxjs/toolkit";
 
-import Navbar from "./layout/Navbar";
+import Navbar from "./layout/Navbar/Navbar";
 import MobileNav from "../components/layout/MobileNav";
 
 import Homepage from "../components/pages/Homepage/Homepage";
@@ -36,7 +36,7 @@ const App = (props) => {
         <div className="app container-fluid p-0 flex" id="main-container">
           {/* show nav unless on login or signup pages.
         Eventually this will be based on isAuthenticated */}
-          <Navbar isAuthenticated={isAuthenticated} />
+          <Navbar isAuthenticated={isAuthenticated} history={history}/>
           <Route exact path="/" component={Homepage} />
           <PrivateRoute
             path="/app"
