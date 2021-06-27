@@ -6,7 +6,7 @@ import { useDispatch, useSelector, connect } from "react-redux";
 import { unwrapResult } from "@reduxjs/toolkit";
 
 import Navbar from "./layout/Navbar/Navbar";
-import MobileNav from "../components/layout/MobileNav";
+import MobileNav from "./layout/NavMobile";
 
 import Homepage from "../components/pages/Homepage/Homepage";
 import UserAuth from "./pages/UserAuth/UserAuth";
