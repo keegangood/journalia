@@ -5,6 +5,7 @@ import { Router, Route, useHistory } from "react-router-dom";
 import "./scss/Calendar.scss";
 
 import SideMenu from "./SideMenu";
+import PlusButton from "../../layout/PlusButton";
 
 import DayView from "./DayView/DayView";
 import WeekView from "./WeekView/WeekView";
@@ -17,7 +18,7 @@ const Calendar = ({ history }) => {
   const dispatch = useDispatch();
 
   return (
-    <div className="container-fluid mt-6">
+    <div className="container-fluid mt-6 position-relative">
       <div className="row">
         <div className="col col-3 col-lg-2 d-none d-md-block p-0">
           <SideMenu />
@@ -30,6 +31,7 @@ const Calendar = ({ history }) => {
             <Route path="/app/year" component={YearView} />
           </div>
         </div>
+        <PlusButton/>
       </div>
     </div>
   );
