@@ -1,12 +1,12 @@
 import React from "react";
 import "./scss/Homepage.scss";
-import Navbar from "../../layout/Navbar";
+import Navbar from "../../layout/Navbar/Navbar";
 
 import { logout } from "../../../state/slices/auth/AuthSlice";
 
 import { useDispatch, useSelector, connect } from "react-redux";
 
-import CalendarViewSelect from '../../layout/CalendarViewSelect';
+import CalendarViewSelect from '../../layout/Navbar/CalendarViewSelect';
 
 const Homepage = () => {
   const { user } = useSelector((state) => state.auth);
