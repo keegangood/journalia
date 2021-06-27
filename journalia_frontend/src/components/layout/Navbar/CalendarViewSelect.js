@@ -11,27 +11,30 @@ const viewOptions = [
   { value: "year", label: "YEAR" },
 ];
 
-const CalendarViewSelect = () => {
+const CalendarViewSelect = ({ selectedView, setSelectedView, ...props }) => {
+  const changeView = (viewPath) => {
+    props.history.push(viewPath);
+  };
+
   return (
     <div className="flex">
       {viewOptions.map((viewOption, i) => (
-        <span className={"calendar-view-option " + (i === 1 ? "selected" : "")}>
+        <span
+          className={
+            "calendar-view-option " +
+            (selectedView === viewOption.label ? "selected" : "")
+          }
+          key={`viewOption${i}`}
+          onClick={() => {
+            setSelectedView(viewOption.label);
+            changeView(`/app/${viewOption.value}`)}
+          }
+        >
           {viewOption.label}
         </span>
       ))}
     </div>
   );
 };
-//   <DropdownButton
-//     title="DAY"
-//     menuAlign="center"
-//     id="calendar-view-select"
-//   >
-//     {viewOptions.map((viewOption, i) => (
-//       <Dropdown.Item key={i} active={i === 0}>{viewOption.label}</Dropdown.Item>
-//     ))}
-//   </DropdownButton>
-// );
-// };
 
 export default CalendarViewSelect;
