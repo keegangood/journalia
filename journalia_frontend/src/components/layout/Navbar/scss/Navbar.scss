@@ -1,7 +1,6 @@
 @use '../../../../scss/journalia-variables.scss' as *;
 @use '../../../../scss/journalia-mixins.scss' as *;
 
-
 #desktop-nav {
   background-color: $barn-red;
 
@@ -21,14 +20,12 @@
     .dropdown-arrow {
       svg {
         @include rectangle(25px);
-        color: $light-copper;
-      }
-
-      
-
-      &:hover {
+        transition: all 0.3s ease-in-out;
+        color: $lighter-copper;
+        &:hover {
           cursor: pointer;
-          color: $cultured;
+          color: $copper;
+        }
       }
     }
 
