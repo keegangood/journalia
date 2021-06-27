@@ -1,0 +1,9 @@
+@use '../../../../scss/journalia-variables.scss' as *;
+@use '../../../../scss/journalia-mixins.scss' as *;
+
+#side-menu {
+    background-color: $light-copper;
+
+    height:100vh;
+    padding-top: 5rem;
+}
