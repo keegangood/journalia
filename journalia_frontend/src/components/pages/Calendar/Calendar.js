@@ -5,7 +5,7 @@ import { Router, Route, useHistory } from "react-router-dom";
 import "./scss/Calendar.scss";
 
 import SideMenu from "./SideMenu";
-import PlusButton from "../../layout/PlusButton";
+import PlusButton from "./PlusButton";
 
 import DayView from "./DayView/DayView";
 import WeekView from "./WeekView/WeekView";
