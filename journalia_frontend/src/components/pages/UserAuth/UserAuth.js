@@ -124,7 +124,8 @@ const mapStateToProps = (state) => {
     isAuthenticated: state.isAuthenticated, // boolean indicating if a user is logged in
     messages: state.messages, // response messages
     user: state.user, // object with auth user data
-    authStatus: state.authStatus
+    authStatus: state.authStatus,
+    date:state.date
   };
 };
 
