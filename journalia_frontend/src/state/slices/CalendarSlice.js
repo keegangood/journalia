@@ -26,7 +26,8 @@ const CalendarSlice = createSlice({
       console.log('dayname', dayName)
       return {
         date: date,
-        dayName: dayName
+        dayName: dayName, 
+        calendarLoadingStatus: "IDLE"
       };
     },
   },
