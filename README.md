@@ -17,7 +17,7 @@ Frontend
     - Managing state with react-redux
     - State slices with redux-toolkit
     - Async redux actions with Thunk middleware
-    - 
+    - Day.js / date manipulation
 
 To Do:
 - Recursive children for items?
