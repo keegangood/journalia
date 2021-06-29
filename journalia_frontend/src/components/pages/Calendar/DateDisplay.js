@@ -1,4 +1,5 @@
 import React from "react";
+import DateSwitcherArrows from "./DateSwitcherArrows";
 
 import "./scss/DateDisplay.scss";
 
@@ -15,8 +16,16 @@ const DateDisplay = ({ date, dayName }) => {
   const yearContent = <span>2021</span>;
 
   return (
-    <div className="px-0 position-fixed w-100" id="date-display">
+    <div
+      className="row mx-0 px-0 position-fixed w-100 d-flex justify-content-center"
+      id="date-display"
+    >
+      <div className="col col-6 offset-3 offset-lg-3">
         <DayContent date={date} dayName={dayName} />
+      </div>
+      <div className="col col-2 offset-1 d-flex flex-col justify-content-center align-items-center">
+        <DateSwitcherArrows/>
+      </div>
     </div>
   );
 };
