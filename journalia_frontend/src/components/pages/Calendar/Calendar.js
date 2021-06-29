@@ -28,20 +28,21 @@ dayjs.extend(toObject);
 const Calendar = ({ history }) => {
   const dispatch = useDispatch();
 
-  const { date, dayName } = useSelector((state) => state.calendar);
+  const { date, dayName, calendarLoadingStatus } = useSelector(
+    (state) => state.calendar
+  );
 
   console.log("calendar date", date);
 
   useEffect(() => {
     // const dayOfWeek = dayjs().get('day')
-    let date = dayjs()
-    let time = date.format()
-    date = date.format('MMMM D, YYYY')
-    console.log('date',date)
-    
+    let date = dayjs();
+    let time = date.format();
+    date = date.format("MMMM D, YYYY");
+    console.log("date", date);
+
     // console.log('day', date.weekday(date.get('day')).format('dd'))
     // const dayName = date.weekday(date.get('day')).toObject();
-
 
     // console.log('dayName', date)
     // console.log('day', dayOfWeek)
@@ -49,22 +50,26 @@ const Calendar = ({ history }) => {
   }, []);
 
   return (
-    <div className="container-fluid mt-6 position-relative">
-      <div className="row">
-        <div className="col col-3 col-lg-2 d-none d-md-block p-0">
-          <SideMenu />
-        </div>
-        <div className="col col-12 col-md-9 col-lg-10 p-0 mt-6">
-          <div className="container-fluid  mt-6 pt-6" id="calendar-container">
-            <DateDisplay date={date} dayName={dayName} />
-            <Route path="/app/day" component={DayView} />
-            <Route path="/app/week" component={WeekView} />
-            <Route path="/app/month" component={MonthView} />
-            <Route path="/app/year" component={YearView} />
+    <div className="container-fluid position-relative">
+      {calendarLoadingStatus === "PENDING" ? (
+        "Loading..."
+      ) : (
+        <div className="row no-gutters">
+          <div className="col col-md-2 d-none d-md-block px-0">
+            <SideMenu />
           </div>
+          <div className="col col-12 col-md-10 px-0 mt-3">
+            <div className="container-fluid px-0" id="calendar-container">
+              <DateDisplay date={date} dayName={dayName} />
+              <Route path="/app/day" component={DayView} />
+              <Route path="/app/week" component={WeekView} />
+              <Route path="/app/month" component={MonthView} />
+              <Route path="/app/year" component={YearView} />
+            </div>
+          </div>
+          <PlusButton />
         </div>
-        <PlusButton />
-      </div>
+      )}
     </div>
   );
 };
@@ -76,7 +81,7 @@ const mapStateToProps = (state) => {
     messages: state.auth.messages, // response messages
     user: state.auth.user, // object with auth user data
     date: state.calendar.date,
-    dayName: state.calendar.dayName
+    dayName: state.calendar.dayName,
   };
 };
 
