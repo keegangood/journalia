@@ -3,4 +3,8 @@
 
 #calendar-container {
     background-color: adjust-color($cultured, $alpha: -.5);
+
+    top: 3rem;
+    position:relative;
+    z-index: 10;
 }
