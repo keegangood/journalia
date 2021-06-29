@@ -36,7 +36,7 @@ const App = (props) => {
         <div className="app container-fluid p-0 flex" id="main-container">
           {/* show nav unless on login or signup pages.
         Eventually this will be based on isAuthenticated */}
-          {/* <Navbar isAuthenticated={isAuthenticated} history={history}/> */}
+          <Navbar isAuthenticated={isAuthenticated} history={history}/>
           <Route exact path="/" component={Homepage} />
           <PrivateRoute
             path="/app"
