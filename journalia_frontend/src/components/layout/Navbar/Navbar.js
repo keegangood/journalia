@@ -14,20 +14,24 @@ const Navbar = ({ isAuthenticated, ...props }) => {
       className="navbar navbar-expand-lg navbar-dark position-fixed fixed-top"
       id="desktop-nav"
     >
-      <div className="container-fluid d-flex" id="navbar-contents">
-        <a href="#" className="navbar-brand m-0">
-          <Logo />
-        </a>
+      <div className="container-fluid" id="navbar-contents">
+        <div className="row w-100 mx-auto">
+          <div className="col col-12 d-flex align-items-center justify-content-between">
+            <a href="#" className="navbar-brand m-0">
+              <Logo />
+            </a>
 
-        <div className="mx-auto">
-          <CalendarViewSelect
-            selectedView={selectedView}
-            setSelectedView={setSelectedView}
-            history={props.history}
-          />
-        </div>
-        <div className="dropdown-arrow">
-          <IoChevronDownCircleOutline />
+            <div className="">
+              <CalendarViewSelect
+                selectedView={selectedView}
+                setSelectedView={setSelectedView}
+                history={props.history}
+              />
+            </div>
+            <div className="dropdown-arrow">
+              <IoChevronDownCircleOutline />
+            </div>
+          </div>
         </div>
       </div>
     </nav>
