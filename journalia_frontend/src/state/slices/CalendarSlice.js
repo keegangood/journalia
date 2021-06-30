@@ -12,7 +12,8 @@ const initialState = {
   journalItems: null,
   calendarLoadingStatus: "PENDING",
   date: null,
-  dayName: null
+  dayName: null,
+  dayOffset: 0
 };
 
 const CalendarSlice = createSlice({
@@ -25,14 +26,22 @@ const CalendarSlice = createSlice({
       dayName = dayName.weekday(dayName.get('day')).format('dddd');
       console.log('dayname', dayName)
       return {
+        ...state,
         date: date,
         dayName: dayName, 
         calendarLoadingStatus: "IDLE"
       };
     },
+    setDayOffset: (state, action) => {
+      return {
+        ...state,
+        dayOffset: action.payload,
+        calendarLoadingStatus: "IDLE"
+      }
+    }
   },
 });
 
-export const { setDate } = CalendarSlice.actions;
+export const { setDate, setDayOffset } = CalendarSlice.actions;
 
 export default CalendarSlice.reducer;
