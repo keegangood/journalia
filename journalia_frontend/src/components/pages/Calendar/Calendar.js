@@ -19,7 +19,7 @@ import MonthView from "./MonthView/MonthView";
 import YearView from "./YearView/YearView";
 
 import { requestAccessToken } from "../../../state/slices/auth/AuthSlice";
-import { setDate } from "../../../state/slices/CalendarSlice";
+import { setDate, setDayOffset } from "../../../state/slices/CalendarSlice";
 
 dayjs.extend(weekday);
 dayjs.extend(customParseFormat);
@@ -28,7 +28,7 @@ dayjs.extend(toObject);
 const Calendar = ({ history }) => {
   const dispatch = useDispatch();
 
-  const { date, dayName, calendarLoadingStatus } = useSelector(
+  const { date, dayName, calendarLoadingStatus, dayOffset } = useSelector(
     (state) => state.calendar
   );
 
@@ -36,10 +36,11 @@ const Calendar = ({ history }) => {
 
   useEffect(() => {
     // const dayOfWeek = dayjs().get('day')
-    let date = dayjs();
-    let time = date.format();
+    let date = dayjs().add(dayOffset, 'day');
+    let time = date.format("HH:mm:ss");
     date = date.format("MMMM D, YYYY");
     console.log("date", date);
+    console.log("time", time);
 
     // console.log('day', date.weekday(date.get('day')).format('dd'))
     // const dayName = date.weekday(date.get('day')).toObject();
@@ -47,7 +48,7 @@ const Calendar = ({ history }) => {
     // console.log('dayName', date)
     // console.log('day', dayOfWeek)
     dispatch(setDate(date));
-  }, []);
+  }, [dayOffset]);
 
   return (
     <div className="container-fluid position-relative">
@@ -60,7 +61,7 @@ const Calendar = ({ history }) => {
           </div>
           <div className="col col-12 col-md-10 px-0 mt-3">
             <div className="container-fluid px-0" id="calendar-container">
-              <DateDisplay date={date} dayName={dayName} />
+              <DateDisplay date={date} dayName={dayName} dayOffset={dayOffset}/>
               <Route path="/app/day" component={DayView} />
               <Route path="/app/week" component={WeekView} />
               <Route path="/app/month" component={MonthView} />
@@ -82,6 +83,7 @@ const mapStateToProps = (state) => {
     user: state.auth.user, // object with auth user data
     date: state.calendar.date,
     dayName: state.calendar.dayName,
+    dayOffset: state.calendar.dayOffset
   };
 };
 
