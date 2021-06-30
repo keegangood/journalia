@@ -6,11 +6,11 @@
     svg {
       height: 1.5rem;
       width: 1.5rem;
-      color: $light-bistre;
+      color: $light-copper;
       transition: all 0.1s ease-in-out;
 
       &:hover {
-        color: $light-copper;
+        color: $lighter-bistre;
         cursor: pointer;
       }
     }
