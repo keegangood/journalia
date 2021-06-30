@@ -10,7 +10,7 @@ const DayContent = ({ date, dayName }) => (
   </div>
 );
 
-const DateDisplay = ({ date, dayName }) => {
+const DateDisplay = ({ date, dayName, dayOffset }) => {
   const weekContent = <span>Jun 28 - Jul 5, 2021</span>;
   const monthContent = <span>June, 2021</span>;
   const yearContent = <span>2021</span>;
@@ -20,11 +20,30 @@ const DateDisplay = ({ date, dayName }) => {
       className="row mx-0 px-0 position-fixed w-100 d-flex justify-content-center"
       id="date-display"
     >
-      <div className="col col-6 offset-3 offset-lg-3">
+      <div
+        className="
+          p-0
+          col
+          col-2
+          offset-lg-2
+          d-flex
+          justify-content-center
+          align-items-center
+          text-center"
+      >
+        {dayOffset === -1
+          ? "Yesterday"
+          : dayOffset === 0
+          ? "Today"
+          : dayOffset === 1
+          ? "Tomorrow"
+          : ""}
+      </div>
+      <div className="col col-6">
         <DayContent date={date} dayName={dayName} />
       </div>
-      <div className="col col-2 offset-1 d-flex flex-col justify-content-center align-items-center">
-        <DateSwitcherArrows/>
+      <div className="col col-2 d-flex flex-col justify-content-center align-items-center">
+        <DateSwitcherArrows />
       </div>
     </div>
   );
