@@ -1,0 +1,33 @@
+@use '../../../../scss/journalia-variables.scss' as *;
+@use '../../../../scss/journalia-mixins.scss' as *;
+
+#date-display {
+    background-color: $lighter-copper;
+    z-index: 60;
+    left: 0;
+
+    .pre-display {
+        font-size: 0.7rem;
+    }
+
+    .main-display {
+    }
+
+    .post-display {
+        font-size: 0.7rem;
+    }
+
+    .date-switcher-arrow {
+        svg {
+            height: 1.5rem;
+            width: 1.5rem;
+            color: $light-copper;
+            transition: all 0.1s ease-in-out;
+
+            &:hover {
+                color: $lighter-bistre;
+                cursor: pointer;
+            }
+        }
+    }
+}

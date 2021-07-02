@@ -11,7 +11,7 @@ import "./scss/Calendar.scss";
 
 import SideMenu from "./SideMenu";
 import PlusButton from "./PlusButton";
-import DateDisplay from "./DateDisplay";
+import DateDisplay from "./DateDisplay/DateDisplay";
 
 import DayView from "./DayView/DayView";
 import WeekView from "./WeekView/WeekView";

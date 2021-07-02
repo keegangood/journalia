@@ -1,5 +1,5 @@
 import { React, useEffect } from "react";
-import "../scss/DayView.scss";
+import "./scss/DayView.scss";
 
 import { useDispatch } from "react-redux";
 
