@@ -2,4 +2,7 @@
 
 .hour-container {
     background-color: adjust-color($cultured, $alpha:-0.3);
+
+    border-bottom: 1px solid $light-bistre;
+    border-top: 1px solid $light-bistre;
 }

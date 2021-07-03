@@ -28,10 +28,10 @@ const HourContainer = () => {
 
   return (
     <div className="col col-12 hour-container d-flex py-3">
-      <div>12pm</div>
-      <div className="ps-3">
+      <div className="d-flex align-items-center py-4">12pm</div>
+      <div className="ps-3 d-flex">
         {todos.map((todo, i)=>(
-          <div key={i}>{todo.title}</div>
+          <div key={i} className="px-4">{todo.title}</div>
         ))}
       </div>
     </div>

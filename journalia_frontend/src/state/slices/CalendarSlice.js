@@ -38,7 +38,7 @@ const CalendarSlice = createSlice({
         dayOffset: action.payload,
         calendarLoadingStatus: "IDLE"
       }
-    }
+    },
   },
 });
 

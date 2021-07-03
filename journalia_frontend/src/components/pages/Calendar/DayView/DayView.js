@@ -1,7 +1,7 @@
 import { React, useEffect } from "react";
 import "./scss/DayView.scss";
 
-import DayContainer from './DayContainer';
+import DayContainer from "./DayContainer";
 
 import { useDispatch } from "react-redux";
 
@@ -13,116 +13,7 @@ const DayView = () => {
       <div className="row">
         <span className="my-5"></span>
         <div className="col col-12 px-0">
-          DAY
-          <DayContainer/>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto,
-            placeat consequatur? Quibusdam facilis, placeat dolores ex minus
-            commodi inventore ducimus, ipsa error voluptatem officiis quia, non
-            deleniti sunt voluptatibus aliquam?
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto,
-            placeat consequatur? Quibusdam facilis, placeat dolores ex minus
-            commodi inventore ducimus, ipsa error voluptatem officiis quia, non
-            deleniti sunt voluptatibus aliquam?
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto,
-            placeat consequatur? Quibusdam facilis, placeat dolores ex minus
-            commodi inventore ducimus, ipsa error voluptatem officiis quia, non
-            deleniti sunt voluptatibus aliquam?
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto,
-            placeat consequatur? Quibusdam facilis, placeat dolores ex minus
-            commodi inventore ducimus, ipsa error voluptatem officiis quia, non
-            deleniti sunt voluptatibus aliquam?
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto,
-            placeat consequatur? Quibusdam facilis, placeat dolores ex minus
-            commodi inventore ducimus, ipsa error voluptatem officiis quia, non
-            deleniti sunt voluptatibus aliquam?
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto,
-            placeat consequatur? Quibusdam facilis, placeat dolores ex minus
-            commodi inventore ducimus, ipsa error voluptatem officiis quia, non
-            deleniti sunt voluptatibus aliquam?
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto,
-            placeat consequatur? Quibusdam facilis, placeat dolores ex minus
-            commodi inventore ducimus, ipsa error voluptatem officiis quia, non
-            deleniti sunt voluptatibus aliquam?
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto,
-            placeat consequatur? Quibusdam facilis, placeat dolores ex minus
-            commodi inventore ducimus, ipsa error voluptatem officiis quia, non
-            deleniti sunt voluptatibus aliquam?
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto,
-            placeat consequatur? Quibusdam facilis, placeat dolores ex minus
-            commodi inventore ducimus, ipsa error voluptatem officiis quia, non
-            deleniti sunt voluptatibus aliquam?
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto,
-            placeat consequatur? Quibusdam facilis, placeat dolores ex minus
-            commodi inventore ducimus, ipsa error voluptatem officiis quia, non
-            deleniti sunt voluptatibus aliquam?
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto,
-            placeat consequatur? Quibusdam facilis, placeat dolores ex minus
-            commodi inventore ducimus, ipsa error voluptatem officiis quia, non
-            deleniti sunt voluptatibus aliquam?
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto,
-            placeat consequatur? Quibusdam facilis, placeat dolores ex minus
-            commodi inventore ducimus, ipsa error voluptatem officiis quia, non
-            deleniti sunt voluptatibus aliquam?
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto,
-            placeat consequatur? Quibusdam facilis, placeat dolores ex minus
-            commodi inventore ducimus, ipsa error voluptatem officiis quia, non
-            deleniti sunt voluptatibus aliquam?
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto,
-            placeat consequatur? Quibusdam facilis, placeat dolores ex minus
-            commodi inventore ducimus, ipsa error voluptatem officiis quia, non
-            deleniti sunt voluptatibus aliquam?
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto,
-            placeat consequatur? Quibusdam facilis, placeat dolores ex minus
-            commodi inventore ducimus, ipsa error voluptatem officiis quia, non
-            deleniti sunt voluptatibus aliquam?
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto,
-            placeat consequatur? Quibusdam facilis, placeat dolores ex minus
-            commodi inventore ducimus, ipsa error voluptatem officiis quia, non
-            deleniti sunt voluptatibus aliquam?
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto,
-            placeat consequatur? Quibusdam facilis, placeat dolores ex minus
-            commodi inventore ducimus, ipsa error voluptatem officiis quia, non
-            deleniti sunt voluptatibus aliquam?
-          </p>
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto,
-            placeat consequatur? Quibusdam facilis, placeat dolores ex minus
-            commodi inventore ducimus, ipsa error voluptatem officiis quia, non
-            deleniti sunt voluptatibus aliquam?
-          </p>
+          <DayContainer />
         </div>
       </div>
     </div>
