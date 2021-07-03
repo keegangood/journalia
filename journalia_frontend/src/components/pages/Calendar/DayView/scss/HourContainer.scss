@@ -1,0 +1,5 @@
+@use '../../../../../scss/journalia-variables.scss' as *;
+
+.hour-container {
+    background-color: adjust-color($cultured, $alpha:-0.3);
+}

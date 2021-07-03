@@ -1,6 +1,8 @@
 import { React, useEffect } from "react";
 import "./scss/DayView.scss";
 
+import DayContainer from './DayContainer';
+
 import { useDispatch } from "react-redux";
 
 const DayView = () => {
@@ -10,8 +12,9 @@ const DayView = () => {
     <div className="container-fluid" id="day-view">
       <div className="row">
         <span className="my-5"></span>
-        <div className="col col-12 px-0 text-center">
+        <div className="col col-12 px-0">
           DAY
+          <DayContainer/>
           <p>
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Architecto,
             placeat consequatur? Quibusdam facilis, placeat dolores ex minus
