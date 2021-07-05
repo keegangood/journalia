@@ -10,7 +10,6 @@ const DayContainer = () => {
   return (
     <div className="row">
       {hours.map((hour) => {
-        <div render={hour}>{hour}</div>
         // <HourContainer hour={hour.toString()} key={hour} />;
       })}
     </div>
