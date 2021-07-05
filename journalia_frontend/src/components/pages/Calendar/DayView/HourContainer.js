@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 
 import './scss/HourContainer.scss';
 
-const HourContainer = () => {
+const HourContainer = ({hour}) => {
 
   const [todos, setTodos] = useState([
     {
@@ -28,7 +28,8 @@ const HourContainer = () => {
 
   return (
     <div className="col col-12 hour-container d-flex py-3">
-      <div className="d-flex align-items-center py-4">12pm</div>
+      <div className="d-flex align-items-center py-4">lalalala</div>
+      {/* <div className="d-flex align-items-center py-4">{hour}</div> */}
       <div className="ps-3 d-flex">
         {todos.map((todo, i)=>(
           <div key={i} className="px-4">{todo.title}</div>
