@@ -32,15 +32,15 @@ const Calendar = ({ history }) => {
     (state) => state.calendar
   );
 
-  console.log("calendar date", date);
+  // console.log("calendar date", date);
 
   useEffect(() => {
     // const dayOfWeek = dayjs().get('day')
     let date = dayjs().add(dayOffset, 'day');
     let time = date.format("HH:mm:ss");
     date = date.format("MMMM D, YYYY");
-    console.log("date", date);
-    console.log("time", time);
+    // console.log("date", date);
+    // console.log("time", time);
 
     // console.log('day', date.weekday(date.get('day')).format('dd'))
     // const dayName = date.weekday(date.get('day')).toObject();
