@@ -6,7 +6,7 @@ import { setDayOffset } from "../../../../state/slices/CalendarSlice";
 
 import './DateDisplay.scss';
 
-const DayContent = ({ date, dayName, dayOffset }) => (
+const DayContent = ({ currentDate, dayName, dayOffset }) => (
   <div className="py-1 text-center flex flex-col justify-content-center">
     <div
       className="
@@ -24,7 +24,7 @@ const DayContent = ({ date, dayName, dayOffset }) => (
         <span>&nbsp;</span>
       )}
     </div>
-    <div className="main-display">{date}</div>
+    <div className="main-display">{currentDate}</div>
     <div className="post-display">{dayName}</div>
   </div>
 );
@@ -35,7 +35,7 @@ const yearContent = <span>2021</span>;
 
 const DateSwitcherArrows = ({}) => {
   const dispatch = useDispatch();
-  let { date, dayName, dayOffset } = useSelector((state) => state.calendar);
+  let { currentDate, dayName, dayOffset } = useSelector((state) => state.calendar);
 
   console.log(dayOffset);
 
@@ -57,7 +57,7 @@ const DateSwitcherArrows = ({}) => {
         </div>
 
         <div className="col col-8 col-md-2">
-          <DayContent date={date} dayName={dayName} dayOffset={dayOffset} />
+          <DayContent currentDate={currentDate} dayName={dayName} dayOffset={dayOffset} />
         </div>
 
         <div className="col col-2 col-md-4 d-flex align-items-center">

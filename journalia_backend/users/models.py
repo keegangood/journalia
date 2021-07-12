@@ -58,7 +58,7 @@ class User(AbstractUser):
     objects = UserManager()
 
     def __str__(self):
-        return self.username
+        return f"{self.username if self.username else 'No Username'} - {self.email}" 
 
 
 class RefreshToken(models.Model):

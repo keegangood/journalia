@@ -19,26 +19,68 @@ import MonthView from "./MonthView/MonthView";
 import YearView from "./YearView/YearView";
 
 import { requestAccessToken } from "../../../state/slices/auth/AuthSlice";
-import { setDate, setDayOffset } from "../../../state/slices/CalendarSlice";
+import {
+  setCurrentDate,
+  setDayOffset,
+  getJournalItems,
+} from "../../../state/slices/CalendarSlice";
+import { unwrapResult } from "@reduxjs/toolkit";
 
 dayjs.extend(weekday);
 dayjs.extend(customParseFormat);
 dayjs.extend(toObject);
 
+
+const getDateRange = () => {
+  const start = dayjs()
+    .subtract(1, "day")
+    .startOf("day")
+    .format("MMMM DD YYYY HH:mm:ss");
+
+  const end = dayjs()
+    .add(1, "day")
+    .endOf("day")
+    .format("MMMM DD YYYY HH:mm:ss");
+
+  return new Promise((resolve, reject) => {
+
+    if(startDate && endDate){
+      return resolve({startDate,endDate})
+    } else {
+      return reject(new Error('Oops'))
+    }
+
+  });
+};
+
 const Calendar = ({ history }) => {
   const dispatch = useDispatch();
 
-  const { date, dayName, calendarLoadingStatus, dayOffset } = useSelector(
-    (state) => state.calendar
-  );
+  const { currentDate, dayName, calendarLoadingStatus, dayOffset } =
+    useSelector((state) => state.calendar);
+  const { accessToken } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+
+    const 
+
+    dispatch(getJournalItems(accessToken))
+      .then(unwrapResult)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
 
   // console.log("calendar date", date);
 
   useEffect(() => {
     // const dayOfWeek = dayjs().get('day')
-    let date = dayjs().add(dayOffset, 'day');
-    let time = date.format("HH:mm:ss");
-    date = date.format("MMMM D, YYYY");
+    let currentDate = dayjs().add(dayOffset, "day");
+    let time = currentDate.format("HH:mm:ss");
+    currentDate = currentDate.format("MMMM D, YYYY");
     // console.log("date", date);
     // console.log("time", time);
 
@@ -47,8 +89,8 @@ const Calendar = ({ history }) => {
 
     // console.log('dayName', date)
     // console.log('day', dayOfWeek)
-    dispatch(setDate(date));
-  }, [dayOffset]);
+    dispatch(setCurrentDate(currentDate));
+  }, [dayOffset, currentDate]);
 
   return (
     <div className="container-fluid position-relative">
@@ -61,8 +103,16 @@ const Calendar = ({ history }) => {
           </div>
           <div className="col col-12 col-md-10 px-0 mt-3">
             <div className="container-fluid px-0" id="calendar-container">
-              <DateDisplay date={date} dayName={dayName} dayOffset={dayOffset}/>
-              <Route path="/app/day" component={DayView} />
+              <DateDisplay
+                currentDate={currentDate}
+                dayName={dayName}
+                dayOffset={dayOffset}
+              />
+              <Route
+                path="/app/day"
+                component={DayView}
+                currentDate={currentDate}
+              />
               <Route path="/app/week" component={WeekView} />
               <Route path="/app/month" component={MonthView} />
               <Route path="/app/year" component={YearView} />
@@ -83,7 +133,7 @@ const mapStateToProps = (state) => {
     user: state.auth.user, // object with auth user data
     date: state.calendar.date,
     dayName: state.calendar.dayName,
-    dayOffset: state.calendar.dayOffset
+    dayOffset: state.calendar.dayOffset,
   };
 };
 

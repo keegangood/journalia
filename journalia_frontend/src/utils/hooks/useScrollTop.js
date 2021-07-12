@@ -2,14 +2,12 @@ import { useEffect, useState } from "react";
 
 export const useScrollTop = (targetElement) => {
   
-  const [scrollPositionY, setScrollPositionY] = useState(null);
+  const [scrollPositionY, setScrollPositionY] = useState(0);
 
   useEffect(() => {
     const scrollHandler = () => {
-      console.log('scrollY', scrollPositionY)
       if (targetElement) {
         setScrollPositionY(document.body.getBoundingClientRect().top);
-
       }
     };
 
@@ -17,7 +15,7 @@ export const useScrollTop = (targetElement) => {
 
 
     return () => window.removeEventListener("scroll", scrollHandler);
-  });
+  },[targetElement]);
 
   return scrollPositionY;
 };

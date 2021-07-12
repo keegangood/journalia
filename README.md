@@ -12,12 +12,14 @@ Backend
     - prefetch_related() / Prefetch()
     - pre_delete signal
     - overriding __init__() and to_representation() methods of ModelSerializer
+    - querying in a range of dates
 
 Frontend
     - Managing state with react-redux
     - State slices with redux-toolkit
     - Async redux actions with Thunk middleware
     - Day.js / date manipulation
+    - separating UI loading state from other reducers
 
 To Do:
 - Recursive children for items?

@@ -23,7 +23,7 @@ class JournalItem(models.Model):
     is_important = models.BooleanField(_('important'), default=False)
     is_research = models.BooleanField(_('research'), default=False)
     is_good_idea = models.BooleanField(_('good idea'), default=False)
-    date_created = models.DateTimeField(_('date created'), auto_now_add=True)
+    date_created = models.DateTimeField(_('date created'), blank=True, null=True) #, auto_now_add=True)
 
     last_modified = models.DateTimeField(_('date edited'), blank=True, null=True)
 

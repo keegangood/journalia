@@ -90,6 +90,9 @@ def journal_item_list(request):
     # ------------------------------------------------------------------------------------------------------------------------------ #
     response = Response()
     if request.method == 'GET':
+
+        print(request.query_params)
+
         reset_queries()
 
         # This will also need to include a date range (24-hours, 1-week, 1-month, 1-year)
@@ -103,6 +106,7 @@ def journal_item_list(request):
         journal_items = user.top_level_journal_items
         journal_item_serializer = JournalItemDetailSerializer(journal_items, many=True)
 
+        # organize journal items in their respective days as dict
         
         print(len(connection.queries))
 
@@ -118,7 +122,7 @@ def journal_item_list(request):
 
         # get the serializer for the new item based on its model
         new_item_type = request.data.get('item_type')
-        new_item_serializer = serializer_from_item_type(new_item_type, 'create')        
+        new_item_serializer = serializer_from_item_type(new_item_type, 'create')
         
         # initialize the serializer with the data
         new_item_serializer = new_item_serializer(data=request.data)

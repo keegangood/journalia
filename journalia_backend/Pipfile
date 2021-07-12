@@ -11,6 +11,8 @@ djangorestframework = "*"
 django-cors-headers = "*"
 python-decouple = "*"
 pyjwt = "*"
+requests = "*"
+faker = "*"
 
 [requires]
 python_version = "3.9"
