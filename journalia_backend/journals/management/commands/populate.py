@@ -1,8 +1,11 @@
 import requests
 import random
 import datetime
+import pytz
 
 from faker import Faker
+
+from main import settings
 
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth import get_user_model
@@ -27,19 +30,20 @@ from journals.models import JournalItem
 
 faker = Faker()
 
-def get_random_item_type():
+
+def get_item_type():
     # 50% of items should be notes
     # 30% of items should be tasks
     # 20% of items should be events
 
-    item_type_chance = random.random()
+    chance = random.random()
 
-    if item_type_chance < .5:
-        item_type = 'N' # Note
-    elif item_type_chance < .8:
-        item_type = 'T' # Task
+    if chance < .5:
+        item_type = 'N'  # Note
+    elif chance < .8:
+        item_type = 'T'  # Task
     else:
-        item_type = 'E' # Event
+        item_type = 'E'  # Event
 
     return item_type
 
@@ -49,14 +53,14 @@ def get_number_of_children():
     # 40% of items should have 2 children
     # 30% of items should have 1 child
     # 20% of items should have 0 children
-    
-    children_chance = random.random()
 
-    if item_chance_type < .1: 
+    chance = random.random()
+
+    if chance < .1:
         number_of_children = 3
-    elif item_type_chance < .5:
+    elif chance < .5:
         number_of_children = 2
-    elif item_type_chance < .8:
+    elif chance < .8:
         number_of_children = 1
     else:
         number_of_children = 0
@@ -73,6 +77,7 @@ def model_from_item_type(item_type):
         model = Event
 
     return model
+
 
 def serializer_from_item_type(item_type, serializer_type):
 
@@ -97,7 +102,8 @@ def serializer_from_item_type(item_type, serializer_type):
 def get_parent_object(item_type, item_id, owner):
     parent_model = model_from_item_type(item_type)
     parent_ct = ContentType.objects.get_for_model(parent_model)
-    parent_object = JournalItem.objects.filter(content_type=parent_ct, object_id=item_id, owner=owner).first()
+    parent_object = JournalItem.objects.filter(
+        content_type=parent_ct, object_id=item_id, owner=owner).first()
 
     return parent_object
 
@@ -109,6 +115,38 @@ def parent_adopts_child(parent, child):
     return
 
 
+def generate_journal_item(user, todo, new_item_type):
+
+    # generate random creation datetime
+    start_date = datetime.date(year=2021, month=1, day=1)
+    date_created = faker.date_time_between(
+        start_date=start_date, end_date='+1y')
+
+    # include timezone info
+    date_created = date_created.replace(tzinfo=pytz.timezone(settings.TIME_ZONE))
+
+    new_item_data = {
+        'item_type': get_item_type(),  # 'N' = Note, 'T' = Task, 'E' = Event
+        'title': todo['title'].capitalize(),
+    }
+
+    new_item_serializer = serializer_from_item_type(new_item_type, 'create')
+    new_item_serializer = new_item_serializer(data=new_item_data)
+
+    if new_item_serializer.is_valid():
+        new_item = new_item_serializer.save()
+
+        # create journal item for new item
+        journal_item = JournalItem.objects.create(
+            content_object=new_item,
+            item_type=new_item_type,
+            owner=user,
+            date_created=date_created
+        )
+
+        return journal_item
+
+
 ITEM_TYPES = {
     'N': 'Note',
     'T': 'Task',
@@ -116,40 +154,36 @@ ITEM_TYPES = {
 }
 
 
-
 class Command(BaseCommand):
     help = 'Populates 200 Journal Items at random dates throughout a year. It will also randomly create parent/child relationships between certain JournalItems.'
 
     def handle(self, *args, **options):
 
-        todos = requests.get('https://jsonplaceholder.typicode.com/todos').json()
+        todos = requests.get(
+            'https://jsonplaceholder.typicode.com/todos').json()
 
         current_index = 0
 
         user = get_user_model().objects.filter(email="keegood8@gmail.com").first()
 
         while current_index < 200:
-            
+
             todo = todos[current_index]
+            current_index += 1
 
-            # 'N' = Note, 'T' = Task, 'E' = Event
-            new_item_type = get_random_item_type()
+            item_type = get_item_type()
 
-            # generate random creation datetime
-            start_date = datetime.date(year=2021, month=1, day=1)
-            date_created = faker.date_time_between(start_date=start_date, end_date='+1y')
+            journal_item = generate_journal_item(user, todo, item_type)
 
-            print(date_created)
+            # 0, 1, 2, or 3 children based on random chance
+            children_remaining = get_number_of_children()
 
-            new_item = {
-                'item_type': new_item_type,
-                'title': todo['title'],
-            }
+            # generate child JournalItems0-p
+            while children_remaining and current_index < 200:
+                todo = todos[current_index]
+                child_item_type = get_item_type()
+                child = generate_journal_item(user, todo, child_item_type)
+                parent_adopts_child(journal_item, child)
 
-            new_item_serializer = serializer_from_item_type(new_item_type, 'create')
-            new_item = new_item_serializer(data=new_item)
-
-
-            print(new_item.is_valid())
-
-            break
+                children_remaining -= 1
+                current_index += 1
