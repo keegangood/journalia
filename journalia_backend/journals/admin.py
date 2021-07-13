@@ -92,6 +92,9 @@ class JournalItemAdmin(admin.ModelAdmin):
         ) or None
 
     def title(self, instance):
-        return f'{instance.id} - {instance.content_object.title}'
+        if instance and instance.content_object:
+            return (f'{instance.id} - {instance.content_object.title}' )
+        else:
+            return 'None'
 
 admin.site.register(JournalItem, JournalItemAdmin)

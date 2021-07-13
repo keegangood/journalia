@@ -62,7 +62,7 @@ const UserAuth = ({ pageAction, pageTitle, ...props }) => {
       dispatch(login({ email, password }))
         .then(unwrapResult)
         .then((res) => {
-          props.history.push("/app");
+          props.history.push("/app/day/");
         })
         .catch((err) => console.log(err));
     } else if (pageAction === "signup") {

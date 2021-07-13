@@ -43,6 +43,7 @@ const App = (props) => {
             component={Calendar}
             isAuthenticated={isAuthenticated}
             authStatus={authStatus}
+            history={history}
           />
           <Route
             exact

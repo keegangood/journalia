@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db.models import query
 from django.shortcuts import render
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -84,14 +86,16 @@ def parent_adopts_child(parent, child):
 @authentication_classes([SafeJWTAuthentication])
 @permission_classes([IsAuthenticated])
 @ensure_csrf_cookie
-def journal_item_list(request):
+def journal_item_list(request, start_date=None, date_range=None):
     # GET A USER OBJECT WITH ALL OF ITS RELATED JOURNAL ITEMS
     # ------------------------------------------------------------------------------------------------------------------------------ #
     # ------------------------------------------------------------------------------------------------------------------------------ #
     response = Response()
     if request.method == 'GET':
 
-        print(request.query_params)
+
+        start_date = datetime.strftime(start_date, '%d%m%y')
+        print('query params', start_date, date_range)
 
         reset_queries()
 
@@ -100,7 +104,7 @@ def journal_item_list(request):
         # WHYYYYYY!?!?!?
         user = User.objects.filter(id=request.user.id).prefetch_related(
             Prefetch('journal_items', queryset=JournalItem.objects.filter(
-                owner=request.user, parent_id=None).prefetch_related(
+                owner=request.user, parent_id=None, ).prefetch_related(
                     'children__content_object'), to_attr='top_level_journal_items')).first()
         
         journal_items = user.top_level_journal_items

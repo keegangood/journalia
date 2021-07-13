@@ -31,28 +31,6 @@ dayjs.extend(customParseFormat);
 dayjs.extend(toObject);
 
 
-const getDateRange = () => {
-  const start = dayjs()
-    .subtract(1, "day")
-    .startOf("day")
-    .format("MMMM DD YYYY HH:mm:ss");
-
-  const end = dayjs()
-    .add(1, "day")
-    .endOf("day")
-    .format("MMMM DD YYYY HH:mm:ss");
-
-  return new Promise((resolve, reject) => {
-
-    if(startDate && endDate){
-      return resolve({startDate,endDate})
-    } else {
-      return reject(new Error('Oops'))
-    }
-
-  });
-};
-
 const Calendar = ({ history }) => {
   const dispatch = useDispatch();
 
@@ -60,11 +38,12 @@ const Calendar = ({ history }) => {
     useSelector((state) => state.calendar);
   const { accessToken } = useSelector((state) => state.auth);
 
+  // get JournalItems for the current view
   useEffect(() => {
 
-    const 
+    console.log(history.location.pathname.split('/')[1])
 
-    dispatch(getJournalItems(accessToken))
+    dispatch(getJournalItems(accessToken, currentDate, ))
       .then(unwrapResult)
       .then((res) => {
         console.log(res);
