@@ -1,4 +1,7 @@
-import React from "react";
+import { current } from "@reduxjs/toolkit";
+import {React, useEffect, useState} from "react";
+
+import dayjs from 'dayjs';
 
 import { AiOutlineCaretLeft, AiOutlineCaretRight } from "react-icons/ai";
 import { useDispatch, useSelector, connect } from "react-redux";
@@ -36,8 +39,9 @@ const yearContent = <span>2021</span>;
 const DateSwitcherArrows = ({}) => {
   const dispatch = useDispatch();
   let { currentDate, dayName, dayOffset } = useSelector((state) => state.calendar);
+  const [dateString, setDateString] = useState('');
 
-  console.log(dayOffset);
+
 
   const incrementDayOffset = () => {
     dispatch(setDayOffset(++dayOffset));
@@ -46,6 +50,14 @@ const DateSwitcherArrows = ({}) => {
   const decrementDayOffset = () => {
     dispatch(setDayOffset(--dayOffset));
   };
+
+  useEffect(() => {
+    if(currentDate){
+      currentDate = dayjs(currentDate).format("MMMM DD, YYYY");
+      setDateString(currentDate); 
+    }
+
+  }, [currentDate])
 
   return (
     <div className="position-fixed mx-0 px-0 w-100" id="date-display">
@@ -57,7 +69,7 @@ const DateSwitcherArrows = ({}) => {
         </div>
 
         <div className="col col-8 col-md-2">
-          <DayContent currentDate={currentDate} dayName={dayName} dayOffset={dayOffset} />
+          <DayContent currentDate={dateString} dayName={dayName} dayOffset={dayOffset} />
         </div>
 
         <div className="col col-2 col-md-4 d-flex align-items-center">
