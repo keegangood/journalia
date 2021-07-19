@@ -1,5 +1,6 @@
-from datetime import datetime
+from datetime import date, datetime, timedelta
 
+from django.utils import timezone
 from django.db.models import query
 from django.shortcuts import render
 from django.views.decorators.csrf import ensure_csrf_cookie
@@ -77,35 +78,59 @@ def parent_adopts_child(parent, child):
 
     return
 
+def string_to_date(date_string):
+    date_parts = date_string.split('=')[1].split('-')
+    date_parts = [int(part) for part in date_parts]
 
+    year, month, day = date_parts
 
-
+    date_obj = date(year=year, month=month, day=day)
+    
+    return date_obj
 
 
 @api_view(['GET', 'POST'])
 @authentication_classes([SafeJWTAuthentication])
 @permission_classes([IsAuthenticated])
 @ensure_csrf_cookie
-def journal_item_list(request, start_date=None, date_range=None):
-    # GET A USER OBJECT WITH ALL OF ITS RELATED JOURNAL ITEMS
+def journal_item_list(request, start_date=None, end_date=None):
+    # GET A USER OBJECT WITH SOME OR ALL OF ITS RELATED JOURNAL ITEMS
     # ------------------------------------------------------------------------------------------------------------------------------ #
     # ------------------------------------------------------------------------------------------------------------------------------ #
     response = Response()
     if request.method == 'GET':
 
+        # print('start_date_before', start_date)
 
-        start_date = datetime.strftime(start_date, '%d%m%y')
-        print('query params', start_date, date_range)
+        start_date = string_to_date(start_date)
+        end_date = string_to_date(end_date)
+        
+        # add a day to include actual end date in filtered query
+        end_date += timedelta(days=1)
+
+        print(start_date, end_date)
+
 
         reset_queries()
 
         # This will also need to include a date range (24-hours, 1-week, 1-month, 1-year)
         # get all top-level journal items and their children for a particular user
         # WHYYYYYY!?!?!?
-        user = User.objects.filter(id=request.user.id).prefetch_related(
-            Prefetch('journal_items', queryset=JournalItem.objects.filter(
-                owner=request.user, parent_id=None, ).prefetch_related(
-                    'children__content_object'), to_attr='top_level_journal_items')).first()
+        if start_date and end_date: 
+        #     user = User.objects.filter(id=request.user.id).prefetch_related(
+        #         Prefetch('journal_items', queryset=JournalItem.objects.filter(
+        #             owner=request.user, parent_id=None, date_created__gte=start_date, date_created__lte=end_date).prefetch_related(
+        #                 'children__content_object'), to_attr='top_level_journal_items')).first()
+
+            user = User.objects.filter(id=request.user.id).prefetch_related(
+                Prefetch('journal_items', queryset=JournalItem.objects.filter(
+                    owner=request.user, parent_id=None, date_created__range=[start_date, end_date]).prefetch_related(
+                        'children__content_object'), to_attr='top_level_journal_items')).first()
+        else:
+            user = User.objects.filter(id=request.user.id).prefetch_related(
+                Prefetch('journal_items', queryset=JournalItem.objects.filter(
+                    owner=request.user, parent_id=None).prefetch_related(
+                        'children__content_object'), to_attr='top_level_journal_items')).first()
         
         journal_items = user.top_level_journal_items
         journal_item_serializer = JournalItemDetailSerializer(journal_items, many=True)

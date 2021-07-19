@@ -30,7 +30,6 @@ dayjs.extend(weekday);
 dayjs.extend(customParseFormat);
 dayjs.extend(toObject);
 
-
 const Calendar = ({ history }) => {
   const dispatch = useDispatch();
 
@@ -40,18 +39,19 @@ const Calendar = ({ history }) => {
 
   // get JournalItems for the current view
   useEffect(() => {
-
-    console.log(history.location.pathname.split('/')[1])
-
-    dispatch(getJournalItems(accessToken, currentDate, ))
-      .then(unwrapResult)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
+    const dateInterval = history.location.pathname.split("/")[2];
+    // console.log("currentDate:", currentDate);
+    if (currentDate) {
+      dispatch(getJournalItems({ accessToken, startDate:currentDate, dateInterval }))
+        .then(unwrapResult)
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [currentDate]);
 
   // console.log("calendar date", date);
 
@@ -59,7 +59,7 @@ const Calendar = ({ history }) => {
     // const dayOfWeek = dayjs().get('day')
     let currentDate = dayjs().add(dayOffset, "day");
     let time = currentDate.format("HH:mm:ss");
-    currentDate = currentDate.format("MMMM D, YYYY");
+    currentDate = currentDate.format("YYYY-M-D");
     // console.log("date", date);
     // console.log("time", time);
 

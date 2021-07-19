@@ -10,26 +10,13 @@ const headers = {
 // requestData: {dateStart, dateEnd}
 export const getJournalItems = createAsyncThunk(
   "calendar/getJournalItems",
-  async (accessToken, { rejectWithValue }) => {
-    const startDate = dayjs()
-      .subtract(1, "day")
-      .startOf("day")
-      .format("MMMM DD YYYY HH:mm:ss");
+  async ({ accessToken, startDate, dateInterval }, { rejectWithValue }) => {
 
-    const endDate = dayjs()
-      .add(1, "day")
-      .endOf("day")
-      .format("MMMM DD YYYY HH:mm:ss");
-
-    console.log(typeof startDate);
+    startDate = dayjs(startDate).format("YYYY-MM-DD");
+    const endDate = dayjs(startDate).add(1, dateInterval).format("YYYY-MM-DD");
 
     const url =
-      BASE_URL +
-      "/" +
-      new URLSearchParams({
-        start_date: startDate,
-        date_range: 'day',
-      });
+      BASE_URL + "/" + new URLSearchParams({ startDate, endDate });
 
     const options = {
       method: "GET",
@@ -40,6 +27,7 @@ export const getJournalItems = createAsyncThunk(
     const response = await fetch(url, options);
 
     const data = await response.json();
+    console.log("data", data);
 
     if (response.ok) {
       return data;
