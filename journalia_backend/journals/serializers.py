@@ -34,7 +34,7 @@ class JournalItemDetailSerializer(ModelSerializer):
             'is_important',
             'is_research',
             'is_good_idea',
-            'data_created',
+            'date_created',
             'last_modified',
             'object_id'
         ]
