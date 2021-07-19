@@ -38,6 +38,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
             'username',
             'email',
             'id',
+            'timezone',
             'last_login',
             'date_joined',
         ]
