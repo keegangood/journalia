@@ -3,6 +3,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.translation import ugettext_lazy as _
 
+from .timezones import timezones
+
 class UserManager(BaseUserManager):
     """Define a model manager for User model with no username field."""
 
@@ -51,6 +53,8 @@ class User(AbstractUser):
             'unique':"This email has already been registered."
         }
     )
+
+    timezone = models.CharField(_('timezone'), max_length=50, blank=True, null=True, choices=timezones)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
