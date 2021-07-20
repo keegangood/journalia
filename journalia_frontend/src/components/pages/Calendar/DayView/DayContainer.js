@@ -6,7 +6,7 @@ const _ = require("lodash");
 //
 
 const DayContainer = ({day}) => {
-  const [hours, setHours] = useState(_.range(1, 25));
+  const [hours, setHours] = useState(_.range(0, 24));
 
   return (
     <div className="row">

@@ -1,22 +1,41 @@
 import { React, useEffect, useRef, useState } from "react";
 import "./scss/DayView.scss";
-import {useScrollData} from 'scroll-data-hook';
+import { useScrollData } from "scroll-data-hook";
 
 import DayContainer from "./DayContainer";
 
 import { useDispatch } from "react-redux";
 
-const DayView = ({currentDate}) => {
-
+const DayView = ({ currentDate }) => {
   const dispatch = useDispatch();
   const dayViewRef = useRef(null);
 
   const scrollData = useScrollData();
 
   useEffect(() => {
-    console.log(scrollData.position.y > dayViewRef.current.getBoundingClientRect().height / 2);
-  }, [scrollData])
-  
+    const scrolling = scrollData.scrolling;
+    const scrollTime = scrollData.time;
+
+    const yPos = scrollData.position.y;
+    const yDir = scrollData.direction.y;
+
+    // height of container holding all currently loaded days
+    const dayViewHeight = dayViewRef.current.getBoundingClientRect().height / 2;
+
+    if (scrolling && scrollTime === 0) {
+      if (yPos > dayViewHeight && yDir === "down") {
+        console.log(
+          "\n********************\nLOAD NEXT DAY\n********************"
+        );
+      } else if (yPos < dayViewHeight && yDir === "up") {
+        console.log(
+          "\n********************\nLOAD PREV DAY\n********************"
+        );
+      }
+    }
+
+  }, [scrollData]);
+
   return (
     <div className="container-fluid" id="day-view">
       <div className="row" ref={dayViewRef}>

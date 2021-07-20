@@ -33,7 +33,7 @@ dayjs.extend(toObject);
 const Calendar = ({ history }) => {
   const dispatch = useDispatch();
 
-  const { currentDate, dayName, calendarLoadingStatus, dayOffset } =
+  const { currentDate, dayName, calendarLoadingStatus, dayOffset, journalItems } =
     useSelector((state) => state.calendar);
   const { accessToken } = useSelector((state) => state.auth);
 
@@ -41,33 +41,26 @@ const Calendar = ({ history }) => {
   useEffect(() => {
     const dateInterval = history.location.pathname.split("/")[2];
     // console.log("currentDate:", currentDate);
-    if (currentDate) {
+    if (calendarLoadingStatus != 'PENDING' && !currentDate) {
       dispatch(getJournalItems({ accessToken, startDate:currentDate, dateInterval }))
         .then(unwrapResult)
         .then((res) => {
+        console.log('fulfilled', res)
+
           console.log(res);
         })
         .catch((err) => {
           console.log(err);
         });
     }
-  }, [currentDate]);
+  }, [calendarLoadingStatus, currentDate]);
 
-  // console.log("calendar date", date);
 
   useEffect(() => {
-    // const dayOfWeek = dayjs().get('day')
     let currentDate = dayjs().add(dayOffset, "day");
     let time = currentDate.format("HH:mm:ss");
     currentDate = currentDate.format("YYYY-M-D");
-    // console.log("date", date);
-    // console.log("time", time);
 
-    // console.log('day', date.weekday(date.get('day')).format('dd'))
-    // const dayName = date.weekday(date.get('day')).toObject();
-
-    // console.log('dayName', date)
-    // console.log('day', dayOfWeek)
     dispatch(setCurrentDate(currentDate));
   }, [dayOffset, currentDate]);
 

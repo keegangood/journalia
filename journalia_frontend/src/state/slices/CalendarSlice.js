@@ -7,16 +7,40 @@ const headers = {
   "Content-Type": "application/json",
 };
 
-// requestData: {dateStart, dateEnd}
 export const getJournalItems = createAsyncThunk(
   "calendar/getJournalItems",
   async ({ accessToken, startDate, dateInterval }, { rejectWithValue }) => {
-
     startDate = dayjs(startDate).format("YYYY-MM-DD");
     const endDate = dayjs(startDate).add(1, dateInterval).format("YYYY-MM-DD");
 
-    const url =
-      BASE_URL + "/" + new URLSearchParams({ startDate, endDate });
+    const url = BASE_URL + "/" + new URLSearchParams({ startDate, endDate });
+
+    const options = {
+      method: "GET",
+      headers: { ...headers, Authorization: `token ${accessToken}` },
+      credentials: "include", // to set cookies
+    };
+
+    const response = await fetch(url, options);
+
+    const data = await response.json();
+    console.log("data", data);
+
+    if (response.ok) {
+      return data;
+    }
+    return rejectWithValue(data);
+  }
+);
+
+
+export const getAdditionalJournalItems = createAsyncThunk(
+  "calendar/getAdditionalJournalItems",
+  async ({ accessToken, startDate, dateInterval }, { rejectWithValue }) => {
+    startDate = dayjs(startDate).format("YYYY-MM-DD");
+    const endDate = dayjs(startDate).add(1, dateInterval).format("YYYY-MM-DD");
+
+    const url = BASE_URL + "/" + new URLSearchParams({ startDate, endDate });
 
     const options = {
       method: "GET",
@@ -68,23 +92,17 @@ const CalendarSlice = createSlice({
       };
     },
   },
-  otherReducers: {
+  extraReducers: {
     [getJournalItems.pending]: (state, action) => {
-      return {
-        calendarLoadingStatus: "PENDING",
-      };
+      state.calendarLoadingStatus = "PENDING";
     },
     [getJournalItems.fulfilled]: (state, action) => {
-      return {
-        journalItems: action.payload.journalItems,
-        calendarLoadingStatus: "IDLE",
-      };
+      state.journalItems = action.payload.journalItems;
+      state.calendarLoadingStatus = "IDLE";
     },
     [getJournalItems.rejected]: (state, action) => {
-      return {
-        journalItems: [],
-        calendarLoadingStatus: "IDLE",
-      };
+      state.journalItems = [];
+      state.calendarLoadingStatus = "IDLE";
     },
   },
 });

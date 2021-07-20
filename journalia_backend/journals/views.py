@@ -34,6 +34,7 @@ from .models import JournalItem
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Prefetch
 
+
 def model_from_item_type(item_type):
     if item_type == 'T':
         model = Task
@@ -43,6 +44,7 @@ def model_from_item_type(item_type):
         model = Event
 
     return model
+
 
 def serializer_from_item_type(item_type, serializer_type):
 
@@ -67,7 +69,8 @@ def serializer_from_item_type(item_type, serializer_type):
 def get_parent_object(item_type, item_id, owner):
     parent_model = model_from_item_type(item_type)
     parent_ct = ContentType.objects.get_for_model(parent_model)
-    parent_object = JournalItem.objects.filter(content_type=parent_ct, object_id=item_id, owner=owner).first()
+    parent_object = JournalItem.objects.filter(
+        content_type=parent_ct, object_id=item_id, owner=owner).first()
 
     return parent_object
 
@@ -78,6 +81,7 @@ def parent_adopts_child(parent, child):
 
     return
 
+
 def string_to_date(date_string):
     date_parts = date_string.split('=')[1].split('-')
     date_parts = [int(part) for part in date_parts]
@@ -85,7 +89,7 @@ def string_to_date(date_string):
     year, month, day = date_parts
 
     date_obj = date(year=year, month=month, day=day)
-    
+
     return date_obj
 
 
@@ -104,44 +108,62 @@ def journal_item_list(request, start_date=None, end_date=None):
 
         start_date = string_to_date(start_date)
         end_date = string_to_date(end_date)
-        
+
         # add a day to include actual end date in filtered query
         end_date += timedelta(days=1)
 
         print(start_date, end_date)
-
 
         reset_queries()
 
         # This will also need to include a date range (24-hours, 1-week, 1-month, 1-year)
         # get all top-level journal items and their children for a particular user
         # WHYYYYYY!?!?!?
-        if start_date and end_date: 
+        if start_date and end_date:
+            #     user = User.objects.filter(id=request.user.id).prefetch_related(
+            #         Prefetch('journal_items', queryset=JournalItem.objects.filter(
+            #             owner=request.user, parent_id=None, date_created__gte=start_date, date_created__lte=end_date).prefetch_related(
+            #                 'children__content_object'), to_attr='top_level_journal_items')).first()
+            user = User.objects.filter(
+                id=request.user.id
+                ).prefetch_related(
+                    Prefetch(
+                        'journal_items', 
+                        queryset=JournalItem.objects.filter(
+                            owner=request.user, 
+                            parent_id=None, 
+                            date_created__range=[start_date, end_date]
+                            )
+                            .order_by('date_created')
+                            .prefetch_related('children__content_object'), 
+                        to_attr='top_level_journal_items')
+                    ).first()
+
+        # get all items for the current user (this will probably go away eventually as views are completed)
+        # else:
         #     user = User.objects.filter(id=request.user.id).prefetch_related(
         #         Prefetch('journal_items', queryset=JournalItem.objects.filter(
-        #             owner=request.user, parent_id=None, date_created__gte=start_date, date_created__lte=end_date).prefetch_related(
+        #             owner=request.user, parent_id=None).order_by('date_created').prefetch_related(
         #                 'children__content_object'), to_attr='top_level_journal_items')).first()
 
-            user = User.objects.filter(id=request.user.id).prefetch_related(
-                Prefetch('journal_items', queryset=JournalItem.objects.filter(
-                    owner=request.user, parent_id=None, date_created__range=[start_date, end_date]).prefetch_related(
-                        'children__content_object'), to_attr='top_level_journal_items')).first()
-        else:
-            user = User.objects.filter(id=request.user.id).prefetch_related(
-                Prefetch('journal_items', queryset=JournalItem.objects.filter(
-                    owner=request.user, parent_id=None).prefetch_related(
-                        'children__content_object'), to_attr='top_level_journal_items')).first()
-        
         journal_items = user.top_level_journal_items
-        journal_item_serializer = JournalItemDetailSerializer(journal_items, many=True)
+
+        for item in journal_items:
+            notes = []
+            tasks = []
+            events = []
+
+
+
+
+        journal_item_serializer = JournalItemDetailSerializer(
+            journal_items, many=True)
 
         # organize journal items in their respective days as dict
-        
+
         print(len(connection.queries))
 
         response.data = {"journalItems": journal_item_serializer.data}
-
-
 
     # CREATE JOURNAL ITEM
     # ------------------------------------------------------------------------------------------------------------------------------ #
@@ -151,8 +173,9 @@ def journal_item_list(request, start_date=None, end_date=None):
 
         # get the serializer for the new item based on its model
         new_item_type = request.data.get('item_type')
-        new_item_serializer = serializer_from_item_type(new_item_type, 'create')
-        
+        new_item_serializer = serializer_from_item_type(
+            new_item_type, 'create')
+
         # initialize the serializer with the data
         new_item_serializer = new_item_serializer(data=request.data)
 
@@ -160,36 +183,39 @@ def journal_item_list(request, start_date=None, end_date=None):
 
             # save new item
             new_item = new_item_serializer.save()
-            
+
             # create journal item for new item
-            journal_item = JournalItem.objects.create(content_object=new_item, item_type=new_item_type, owner=user)
+            journal_item = JournalItem.objects.create(
+                content_object=new_item, item_type=new_item_type, owner=user)
 
             # get parent info from request
             parent_data = request.data.get('parent')
-            
+
             # check if new item will have a parent
             if parent_data:
                 parent_type = parent_data.get('item_type')
                 parent_id = parent_data.get('object_id')
                 # get model, ContentType and parent JournalItem objects
-                
+
                 parent_object = get_parent_object(parent_type, parent_id, user)
 
                 # if the parent exists
                 if parent_object:
-                    
-                    # to maintain a single level of relationship if the parent object 
+
+                    # to maintain a single level of relationship if the parent object
                     # is a child of another object, it can't have children
                     if parent_object.is_child:
                         response.status_code = status.HTTP_400_BAD_REQUEST
-                        response.data = {"errors":["item cannot have children"]}
+                        response.data = {"errors": [
+                            "item cannot have children"]}
                         return response
-                        
+
                     else:
-                        parent_adopts_child(parent=parent_object, child=journal_item)
-   
+                        parent_adopts_child(
+                            parent=parent_object, child=journal_item)
+
                 # if the parent item doesn't exist
-                else:                
+                else:
                     # delete new item that was just created
                     new_item.delete()
 
@@ -199,7 +225,7 @@ def journal_item_list(request, start_date=None, end_date=None):
                     }
 
                     return response
-               
+
             journal_item = JournalItemDetailSerializer(journal_item)
 
             response.data = {
@@ -211,17 +237,9 @@ def journal_item_list(request, start_date=None, end_date=None):
             response.status_code = status.HTTP_400_BAD_REQUEST
             response.data = {
                 'errors': new_item_serializer.errors
-            }    
-
+            }
 
     return response
-        
-
-
-
-
-
-
 
 
 @api_view(['GET', 'POST'])
@@ -248,13 +266,12 @@ def journal_item_detail(request):
                 'content_object').filter(
                     content_type=item_ct, object_id=item_id, owner=request.user).first()
 
-
             if journal_item is None:
-                response.status_code=status.HTTP_400_BAD_REQUEST
+                response.status_code = status.HTTP_400_BAD_REQUEST
                 response.data = {"errors": [f"item not found"]}
 
             else:
-                detail_serializer = JournalItemDetailSerializer(journal_item) 
+                detail_serializer = JournalItemDetailSerializer(journal_item)
 
                 response.data = {
                     "journalItem": detail_serializer.data,
@@ -262,8 +279,9 @@ def journal_item_detail(request):
 
         else:
 
-            response.status_code=status.HTTP_400_BAD_REQUEST
-            response.data = {"errors": ["missing item_type or item_id in request data for JournalItem"]}
+            response.status_code = status.HTTP_400_BAD_REQUEST
+            response.data = {"errors": [
+                "missing item_type or item_id in request data for JournalItem"]}
 
     # UPDATE JOURNAL ITEM
     # ----------------------------------------------------------------------------------------------------------------------------- #
@@ -276,44 +294,48 @@ def journal_item_detail(request):
 
             item_model = model_from_item_type(item_type)
             item_ct = ContentType.objects.get_for_model(item_model)
-            journal_item = JournalItem.objects.prefetch_related('content_object').filter(content_type=item_ct, object_id=item_id, owner=request.user).first()
+            journal_item = JournalItem.objects.prefetch_related('content_object').filter(
+                content_type=item_ct, object_id=item_id, owner=request.user).first()
 
             if journal_item is None:
-                response.status_code=status.HTTP_400_BAD_REQUEST
+                response.status_code = status.HTTP_400_BAD_REQUEST
                 response.data = {"errors": [f"item not found"]}
             else:
 
-                create_serializer = serializer_from_item_type(item_type, 'create')
+                create_serializer = serializer_from_item_type(
+                    item_type, 'create')
 
-                create_serializer = create_serializer(journal_item.content_object, data=request.data.get('updated_fields'), partial=True) 
+                create_serializer = create_serializer(
+                    journal_item.content_object, data=request.data.get('updated_fields'), partial=True)
 
-                if create_serializer.is_valid():    
+                if create_serializer.is_valid():
 
                     # get parent info from request
                     parent_data = request.data.get('parent')
-            
 
                     # check if new item will have a parent
                     if parent_data:
-                        
-                        
+
                         parent_type = parent_data.get('item_type')
                         parent_id = parent_data.get('object_id')
-                        
-                        parent_object = get_parent_object(parent_type, parent_id, user)
+
+                        parent_object = get_parent_object(
+                            parent_type, parent_id, user)
 
                         # if the parent exists
                         if parent_object:
 
                             if journal_item.is_child:
                                 response.status_code = status.HTTP_400_BAD_REQUEST
-                                response.data = {"errors":["item cannot have children"]}
+                                response.data = {"errors": [
+                                    "item cannot have children"]}
                                 return response
 
-                            parent_adopts_child(parent=parent_object, child=journal_item)
+                            parent_adopts_child(
+                                parent=parent_object, child=journal_item)
 
                         # if the parent item doesn't exist
-                        else:                
+                        else:
                             # delete new item that was just created
 
                             response.status_code = status.HTTP_400_BAD_REQUEST
@@ -323,7 +345,6 @@ def journal_item_detail(request):
 
                             return response
 
-
                     create_serializer.save()
 
                     response.data = {
@@ -331,22 +352,15 @@ def journal_item_detail(request):
                         "messages": ["Updated successfully!"]
                     }
 
-
                 else:
                     response.data = create_serializer.errors
 
         else:
-            response.status_code=status.HTTP_400_BAD_REQUEST
-            response.data = {"errors": ["missing item_type or item_id in request data for JournalItem"]}
-
-
+            response.status_code = status.HTTP_400_BAD_REQUEST
+            response.data = {"errors": [
+                "missing item_type or item_id in request data for JournalItem"]}
 
     return response
-
-
-
-
-
 
 
 @api_view(['POST'])
@@ -361,31 +375,29 @@ def journal_item_delete(request):
     if request.data.get('item_id'):
         item_id = request.data.get('item_id')
         item_type = request.data.get('item_type')
-        
+
         item_model = model_from_item_type(item_type)
 
         item_type = ContentType.objects.get_for_model(item_model)
 
         # delete the particular item
-        journal_item = JournalItem.objects.filter(content_type=item_type, object_id=item_id, owner=request.user).first()
+        journal_item = JournalItem.objects.filter(
+            content_type=item_type, object_id=item_id, owner=request.user).first()
 
     else:
         journal_item = JournalItem.objects.first()
-    
 
         if journal_item is None:
             response.status_code = status.HTTP_400_BAD_REQUEST
-            response.data={'errors': ["No JournalItem objects exist."]}
+            response.data = {'errors': ["No JournalItem objects exist."]}
 
         else:
             # this will trigger the pre_delete signal to delete the related
             # content object and all children of the deleted item
             journal_item.delete()
 
-            response.data={
+            response.data = {
                 'messages': ['deleted successfully']
             }
-    
-    return response
-    
 
+    return response

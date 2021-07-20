@@ -2,9 +2,12 @@
 @use '../../../../scss/journalia-mixins.scss' as *;
 
 #date-display {
+    min-height: 10vh;
     background-color: $lighter-copper;
     z-index: 60;
     left: 0;
+
+    transition: visibility .3s ease-in-out;
 
     .pre-display {
         font-size: 0.8rem;
