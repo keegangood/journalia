@@ -12,10 +12,13 @@ const DayView = ({ currentDate }) => {
 
   const scrollData = useScrollData();
 
+  const [dayContainerRefs, setDayContainerRefs] = useState([]);
+
   useEffect(() => {
-    const scrolling = scrollData.scrolling;
+    const scrolling = scrollData.scrolling; // true/false
     const scrollTime = scrollData.time;
 
+    // position and direction of scroll
     const yPos = scrollData.position.y;
     const yDir = scrollData.direction.y;
 
