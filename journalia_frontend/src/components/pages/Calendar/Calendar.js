@@ -23,6 +23,8 @@ import {
   setCurrentDate,
   setDayOffset,
   getJournalItems,
+  addNextDay,
+  addPrevDay,
 } from "../../../state/slices/CalendarSlice";
 import { unwrapResult } from "@reduxjs/toolkit";
 
@@ -33,28 +35,38 @@ dayjs.extend(toObject);
 const Calendar = ({ history }) => {
   const dispatch = useDispatch();
 
-  const { currentDate, dayName, calendarLoadingStatus, dayOffset, journalItems } =
-    useSelector((state) => state.calendar);
-  const { accessToken } = useSelector((state) => state.auth);
+  const {
+    currentDate,
+    dayName,
+    calendarLoadingStatus,
+    dayOffset,
+    journalItems,
+  } = useSelector((state) => state.calendar);
+  const { accessToken, activeDay } = useSelector((state) => state.auth);
 
   // get JournalItems for the current view
   useEffect(() => {
     const dateInterval = history.location.pathname.split("/")[2];
-    // console.log("currentDate:", currentDate);
-    if (calendarLoadingStatus != 'PENDING' && !currentDate) {
-      dispatch(getJournalItems({ accessToken, startDate:currentDate, dateInterval }))
+    // If the current date isn't set, set it
+
+    if (calendarLoadingStatus != "PENDING") {
+      dispatch(
+        getJournalItems({ accessToken, startDate: currentDate, dateInterval })
+      )
         .then(unwrapResult)
         .then((res) => {
-        console.log('fulfilled', res)
-
-          console.log(res);
+          if(dateInterval === 'day'){
+            addNextDay(res.day)
+          } else if (dateInterval === 'week'){}
+          else if (dateInterval === 'month'){}
+          else if (dateInterval === 'year') {}
+         
         })
         .catch((err) => {
-          console.log(err);
+          console.log('err',err);
         });
     }
-  }, [calendarLoadingStatus, currentDate]);
-
+  }, []);
 
   useEffect(() => {
     let currentDate = dayjs().add(dayOffset, "day");
@@ -80,11 +92,7 @@ const Calendar = ({ history }) => {
                 dayName={dayName}
                 dayOffset={dayOffset}
               />
-              <Route
-                path="/app/day"
-                component={DayView}
-                currentDate={currentDate}
-              />
+              <Route path="/app/day" component={DayView} day={activeDay} />
               <Route path="/app/week" component={WeekView} />
               <Route path="/app/month" component={MonthView} />
               <Route path="/app/year" component={YearView} />

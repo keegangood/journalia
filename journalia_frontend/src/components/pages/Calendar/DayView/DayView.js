@@ -1,54 +1,69 @@
 import { React, useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector, connect } from "react-redux";
+
 import "./scss/DayView.scss";
 import { useScrollData } from "scroll-data-hook";
-
 import DayContainer from "./DayContainer";
 
-import { useDispatch } from "react-redux";
+import {addNextDay, addPrevDay, getJournalItems} from '../../../../state/slices/CalendarSlice';
 
-const DayView = ({ currentDate }) => {
+const DayView = ({ day }) => {
   const dispatch = useDispatch();
-  const dayViewRef = useRef(null);
-
   const scrollData = useScrollData();
+  
+  const { calendarLoadingStatus, dayObjects } = useSelector(
+    (state) => state.calendar
+    );
+    
+  const dayViewRef = useRef(null);
+  const dayContainerRefs = useRef([]);
 
-  const [dayContainerRefs, setDayContainerRefs] = useState([]);
+  // dayOffset - integer 1 or -1
+  const addDay = (dayOffset) => {};
+
+    useEffect(()=>{
+      console.log(dayContainerRefs)
+    },[dayContainerRefs])
 
   useEffect(() => {
     const scrolling = scrollData.scrolling; // true/false
     const scrollTime = scrollData.time;
 
     // position and direction of scroll
-    const yPos = scrollData.position.y;
-    const yDir = scrollData.direction.y;
+    const scrollPosY = scrollData.position.y;
+    const scrollDirection = scrollData.direction.y;
 
     // height of container holding all currently loaded days
     const dayViewHeight = dayViewRef.current.getBoundingClientRect().height / 2;
 
     if (scrolling && scrollTime === 0) {
-      if (yPos > dayViewHeight && yDir === "down") {
-        console.log(
-          "\n********************\nLOAD NEXT DAY\n********************"
-        );
-      } else if (yPos < dayViewHeight && yDir === "up") {
+      if (scrollPosY < dayViewHeight && scrollDirection === "up") {
         console.log(
           "\n********************\nLOAD PREV DAY\n********************"
         );
+      } else if (scrollPosY > dayViewHeight && scrollDirection === "down") {
+        console.log(
+          "\n********************\nLOAD NEXT DAY\n********************"
+        );
       }
     }
-
   }, [scrollData]);
 
   return (
-    <div className="container-fluid" id="day-view">
-      <div className="row" ref={dayViewRef}>
+    <div className="px-2" id="day-view" ref={dayViewRef}>
         <span className="my-5"></span>
-        <div className="col col-12 px-0">
+        <div className="container-fluid px-1" ref={el=>dayContainerRefs.current.push(el)}>
           <DayContainer />
         </div>
-      </div>
     </div>
   );
 };
 
-export default DayView;
+const mapStateToProps = (state) => {
+  return {
+    calendarLoadingStatus: state.calendarLoadingStatus,
+    dayObjects: state.dayObjects
+  };
+};
+
+export default connect(mapStateToProps)(DayView);
