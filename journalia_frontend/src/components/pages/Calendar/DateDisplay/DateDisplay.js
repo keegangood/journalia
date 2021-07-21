@@ -22,7 +22,7 @@ const yearContent = <span>2021</span>;
 
 const DateSwitcherArrows = ({}) => {
   const dispatch = useDispatch();
-  let { currentDate, dayName, dayOffset } = useSelector(
+  let { currentDate, activeDayName, dayOffset } = useSelector(
     (state) => state.calendar
   );
   const [dateString, setDateString] = useState("");
@@ -54,7 +54,7 @@ const DateSwitcherArrows = ({}) => {
         <div className="col col-8 col-md-2">
           <DayContent
             currentDate={dateString}
-            dayName={dayName}
+            activeDayName={activeDayName}
             dayOffset={dayOffset}
           />
           <div
@@ -88,7 +88,7 @@ const DateSwitcherArrows = ({}) => {
 const mapStateToProps = (state) => {
   return {
     dayOffset: state.calendar.dayOffset,
-    dayName: state.calendar.dayName,
+    activeDayName: state.calendar.activeDayName,
     date: state.calendar.date,
   };
 };
