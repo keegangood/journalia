@@ -97,14 +97,14 @@ def string_to_date(date_string):
 @authentication_classes([SafeJWTAuthentication])
 @permission_classes([IsAuthenticated])
 @ensure_csrf_cookie
-def journal_item_list(request, start_date=None, end_date=None):
+def journal_item_list(request, start_date=None, end_date=None, date_interval=None):
     # GET A USER OBJECT WITH SOME OR ALL OF ITS RELATED JOURNAL ITEMS
     # ------------------------------------------------------------------------------------------------------------------------------ #
     # ------------------------------------------------------------------------------------------------------------------------------ #
     response = Response()
     if request.method == 'GET':
 
-        # print('start_date_before', start_date)
+        print('date_interval', date_interval)
 
         start_date = string_to_date(start_date)
         end_date = string_to_date(end_date)
@@ -126,18 +126,18 @@ def journal_item_list(request, start_date=None, end_date=None):
             #                 'children__content_object'), to_attr='top_level_journal_items')).first()
             user = User.objects.filter(
                 id=request.user.id
-                ).prefetch_related(
-                    Prefetch(
-                        'journal_items', 
-                        queryset=JournalItem.objects.filter(
-                            owner=request.user, 
-                            parent_id=None, 
-                            date_created__range=[start_date, end_date]
-                            )
-                            .order_by('date_created')
-                            .prefetch_related('children__content_object'), 
-                        to_attr='top_level_journal_items')
-                    ).first()
+            ).prefetch_related(
+                Prefetch(
+                    'journal_items',
+                    queryset=JournalItem.objects.filter(
+                        owner=request.user,
+                        parent_id=None,
+                        date_created__range=[start_date, end_date]
+                    )
+                    .order_by('date_created')
+                    .prefetch_related('children__content_object'),
+                    to_attr='top_level_journal_items')
+            ).first()
 
         # get all items for the current user (this will probably go away eventually as views are completed)
         # else:
@@ -153,9 +153,6 @@ def journal_item_list(request, start_date=None, end_date=None):
             tasks = []
             events = []
 
-
-
-
         journal_item_serializer = JournalItemDetailSerializer(
             journal_items, many=True)
 
@@ -163,7 +160,10 @@ def journal_item_list(request, start_date=None, end_date=None):
 
         print(len(connection.queries))
 
-        response.data = {"journalItems": journal_item_serializer.data}
+        response.data = {
+            'journalItems': journal_item_serializer.data,
+            'dateInterval': date_interval
+        }
 
     # CREATE JOURNAL ITEM
     # ------------------------------------------------------------------------------------------------------------------------------ #
