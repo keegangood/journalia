@@ -23,8 +23,8 @@ import {
   setCurrentDate,
   setDayOffset,
   getJournalItems,
-  addNextDay,
-  addPrevDay,
+  addNextJournalItems,
+  addPrevJournalItems,
 } from "../../../state/slices/CalendarSlice";
 import { unwrapResult } from "@reduxjs/toolkit";
 
@@ -42,7 +42,8 @@ const Calendar = ({ history }) => {
     dayOffset,
     journalItems,
   } = useSelector((state) => state.calendar);
-  const { accessToken, activeDay } = useSelector((state) => state.auth);
+  const { accessToken } = useSelector((state) => state.auth);
+  const { activeDay } = useSelector((state) => state.calendar);
 
   // get JournalItems for the current view
   useEffect(() => {
@@ -50,23 +51,34 @@ const Calendar = ({ history }) => {
     // If the current date isn't set, set it
 
     if (calendarLoadingStatus != "PENDING") {
+      addNextJournalItems({
+        journal_items: [],
+        dateInterval,
+        loadingStatus: "PENDING",
+      });
       dispatch(
         getJournalItems({ accessToken, startDate: currentDate, dateInterval })
       )
         .then(unwrapResult)
         .then((res) => {
-          if(dateInterval === 'day'){
-            addNextDay(res.day)
-          } else if (dateInterval === 'week'){}
-          else if (dateInterval === 'month'){}
-          else if (dateInterval === 'year') {}
-         
+          if (dateInterval === "day") {
+            const { journalItems } = res;
+            dispatch(
+              addNextJournalItems({
+                journalItems,
+                dateInterval,
+              })
+            );
+          } else if (dateInterval === "week") {
+          } else if (dateInterval === "month") {
+          } else if (dateInterval === "year") {
+          }
         })
         .catch((err) => {
-          console.log('err',err);
+          console.log("err", err);
         });
     }
-  }, []);
+  }, [calendarLoadingStatus, activeDay]);
 
   useEffect(() => {
     let currentDate = dayjs().add(dayOffset, "day");
@@ -114,6 +126,7 @@ const mapStateToProps = (state) => {
     date: state.calendar.date,
     dayName: state.calendar.dayName,
     dayOffset: state.calendar.dayOffset,
+    dayObjects: state.calendar.dayObjects,
   };
 };
 

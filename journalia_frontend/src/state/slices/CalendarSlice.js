@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { weekday } from "dayjs/plugin/weekday";
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, current } from "@reduxjs/toolkit";
 
 const BASE_URL = "http://localhost:8000";
 const headers = {
@@ -16,7 +16,10 @@ export const getJournalItems = createAsyncThunk(
     startDate = dayjs(startDate).format("YYYY-MM-DD");
     const endDate = dayjs(startDate).add(1, dateInterval).format("YYYY-MM-DD");
 
-    const url = BASE_URL + "/" + new URLSearchParams({ startDate, endDate, dateInterval });
+    const url =
+      BASE_URL +
+      "/" +
+      new URLSearchParams({ startDate, endDate, dateInterval });
 
     const options = {
       method: "GET",
@@ -41,7 +44,10 @@ export const getAdditionalJournalItems = createAsyncThunk(
     startDate = dayjs(startDate).format("YYYY-MM-DD");
     const endDate = dayjs(startDate).add(1, dateInterval).format("YYYY-MM-DD");
 
-    const url = BASE_URL + "/" + new URLSearchParams({ startDate, endDate, dateInterval });
+    const url =
+      BASE_URL +
+      "/" +
+      new URLSearchParams({ startDate, endDate, dateInterval });
 
     const options = {
       method: "GET",
@@ -68,6 +74,7 @@ const initialState = {
   dayOffset: 0, // offset from current day in days
   activeDay: null, // date of currently displayed day
   activeDayName: null, // activeDay name
+  dayObjects: [], // {day: {day object from db}, loading: 'PENDING'/'IDLE'}
 };
 
 const CalendarSlice = createSlice({
@@ -84,18 +91,20 @@ const CalendarSlice = createSlice({
         activeDay: currentDate,
         activeDayName: dayName,
         calendarLoadingStatus: "IDLE",
+        dayObjects: [],
       };
     },
     setActiveDate: (state, action) => {
       const currentDate = action.payload;
-      let dayName = dayjs(currentDate);
-      dayName = dayName.weekday(dayName.get("day")).format("dddd");
+      let dayName = dayjs(currentDate)
+        .weekday(dayName.get("day"))
+        .format("dddd");
       return {
         ...state,
         activeDay: currentDate,
         activeDayName: dayName,
         calendarLoadingStatus: "IDLE",
-      }
+      };
     },
     setDayOffset: (state, action) => {
       return {
@@ -104,23 +113,43 @@ const CalendarSlice = createSlice({
         calendarLoadingStatus: "IDLE",
       };
     },
-    addNextDay: (state, action) => {
+    addPrevJournalItems: (state, action) => {
+      const { journalItems, dateInterval } = action.payload;
       return {
         ...state,
-        dayObjects: state.dayObjects.push(action.payload.journalItems),
-        calendarLoadingStatus: "IDLE",
+        [`${dateInterval}Objects`]: [
+          {
+            day: journalItems,
+            loadingStatus: 'IDLE',
+          },
+          ...state[`${dateInterval}Objects`],
+        ],
       };
     },
-    addPrevDay: (state, action) => {
+    addNextJournalItems: (state, action) => {
+      console.log(current(state, action))
+      const { journalItems, dateInterval } = action.payload;
       return {
         ...state,
-        dayObjects: state.dayObjects.unshift(action.payload.journalItems),
-        calendarLoadingStatus: "IDLE",
+        [`${dateInterval}Objects`]: [
+          ...state[`${dateInterval}Objects`],
+          {
+            day: journalItems,
+            loadingStatus: "IDLE",
+          },
+        ],
+      };
+    },
+    setJournalItemLoadingStatus: (state, action) => {
+      const { journalItem } = action.payload;
+      return {
+        ...state,
       };
     },
   },
   extraReducers: {
     [getJournalItems.pending]: (state, action) => {
+      state.journalItems = [];
       state.calendarLoadingStatus = "PENDING";
     },
     [getJournalItems.fulfilled]: (state, action) => {
@@ -134,7 +163,11 @@ const CalendarSlice = createSlice({
   },
 });
 
-export const { setCurrentDate, setDayOffset, addNextDay, addPrevDay } =
-  CalendarSlice.actions;
+export const {
+  setCurrentDate,
+  setDayOffset,
+  addNextJournalItems,
+  addPrevJournalItems,
+} = CalendarSlice.actions;
 
 export default CalendarSlice.reducer;
