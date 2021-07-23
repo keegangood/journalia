@@ -27,6 +27,7 @@ const DateSwitcherArrows = ({}) => {
   );
   const [dateString, setDateString] = useState("");
 
+  
   const incrementDayOffset = () => {
     dispatch(setDayOffset(++dayOffset));
   };
@@ -35,6 +36,7 @@ const DateSwitcherArrows = ({}) => {
     dispatch(setDayOffset(--dayOffset));
   };
 
+  // reformat currentDate
   useEffect(() => {
     if (currentDate) {
       currentDate = dayjs(currentDate).format("MMMM DD, YYYY");
@@ -54,7 +56,7 @@ const DateSwitcherArrows = ({}) => {
         <div className="col col-8 col-md-2">
           <DayContent
             currentDate={dateString}
-            activeDayName={activeDayName}
+            dayName={activeDayName}
             dayOffset={dayOffset}
           />
           <div
