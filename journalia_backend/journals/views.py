@@ -1,4 +1,7 @@
+import json
+
 from datetime import date, datetime, timedelta
+
 
 from django.utils import timezone
 from django.db.models import query
@@ -10,7 +13,6 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
-
 
 from users.models import User
 from users.serializers import UserDetailSerializer
@@ -28,70 +30,19 @@ from notes.models import Note
 from notes.serializers import NoteCreateSerializer
 from notes.serializers import NoteDetailSerializer
 
-from .serializers import JournalItemDetailSerializer
 from .models import JournalItem
+from .serializers import JournalItemDetailSerializer
 
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Prefetch
 
-
-def model_from_item_type(item_type):
-    if item_type == 'T':
-        model = Task
-    elif item_type == 'N':
-        model = Note
-    elif item_type == 'E':
-        model = Event
-
-    return model
-
-
-def serializer_from_item_type(item_type, serializer_type):
-
-    serializers = {
-        'T': {
-            'create': TaskCreateSerializer,
-            'detail': TaskDetailSerializer
-        },
-        'N': {
-            'create': NoteCreateSerializer,
-            'detail': NoteDetailSerializer
-        },
-        'E': {
-            'create': EventCreateSerializer,
-            'detail': EventDetailSerializer
-        }
-    }
-
-    return serializers[item_type][serializer_type]
-
-
-def get_parent_object(item_type, item_id, owner):
-    parent_model = model_from_item_type(item_type)
-    parent_ct = ContentType.objects.get_for_model(parent_model)
-    parent_object = JournalItem.objects.filter(
-        content_type=parent_ct, object_id=item_id, owner=owner).first()
-
-    return parent_object
-
-
-def parent_adopts_child(parent, child):
-    parent.add_child(child, save=True)
-    child.set_parent(parent, save=True)
-
-    return
-
-
-def string_to_date(date_string):
-    date_parts = date_string.split('=')[1].split('-')
-    date_parts = [int(part) for part in date_parts]
-
-    year, month, day = date_parts
-
-    date_obj = date(year=year, month=month, day=day)
-
-    return date_obj
-
+from .utils import (
+    model_from_item_type,
+    serializer_from_item_type,
+    get_parent_object,
+    parent_adopts_child,
+    string_to_date
+)
 
 @api_view(['GET', 'POST'])
 @authentication_classes([SafeJWTAuthentication])
@@ -103,14 +54,14 @@ def journal_item_list(request, start_date=None, end_date=None, date_interval=Non
     # ------------------------------------------------------------------------------------------------------------------------------ #
     response = Response()
     if request.method == 'GET':
-
-        print('date_interval', date_interval)
+        # print('date_interval', date_interval)
 
         start_date = string_to_date(start_date)
         end_date = string_to_date(end_date)
+        date_interval = date_interval.split('=')[1]
 
         # add a day to include actual end date in filtered query
-        end_date += timedelta(days=1)
+        # end_date += timedelta(days=1)
 
         print(start_date, end_date)
 
@@ -148,15 +99,8 @@ def journal_item_list(request, start_date=None, end_date=None, date_interval=Non
 
         journal_items = user.top_level_journal_items
 
-        for item in journal_items:
-            notes = []
-            tasks = []
-            events = []
-
         journal_item_serializer = JournalItemDetailSerializer(
             journal_items, many=True)
-
-        # organize journal items in their respective days as dict
 
         print(len(connection.queries))
 
