@@ -127,8 +127,8 @@ const CalendarSlice = createSlice({
       };
     },
     addNextJournalItems: (state, action) => {
-      console.log(current(state, action))
       const { journalItems, dateInterval } = action.payload;
+      console.log('dayObjects', current(`${dateInterval}Objects`))
       return {
         ...state,
         [`${dateInterval}Objects`]: [
